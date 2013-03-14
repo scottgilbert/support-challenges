@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# Challenge1 - Write a script that builds three 512 MB Cloud Servers that
+# following a similar naming convention. (ie., web1, web2, web3) and returns
+# the IP and login credentials for each server. Use any image you want.
+
+import os
+import time
+import pyrax
+
+credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+# 512MB
+flavor = 2 
+# CentOS 6.3
+image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
+
+pyrax.set_credential_file(credential_file)
+cs = pyrax.cloudservers
+server=[]
+
+# Request build of new servers
+for server_num in xrange(1,4):
+  server.append(cs.servers.create("web%d" % server_num, image, flavor))
+
+# Wait for all servers to get network info assigned
+build_done = False
+while not build_done:
+  time.sleep(5)
+  build_done = True
+  for srv in server:
+    if cs.servers.get(srv.id).networks == {}:  build_done = False
+
+# Print all the juicy goodness!
+for srv in server:
+  print
+  srvr = cs.servers.get(srv.id)
+  print "Server Name:", srvr.name
+  print "Root Password:", srv.adminPass
+  print "Public IPs:", 
+  for ip in srvr.networks['public']: print ip, '  ',
+  print
+  print "Private IP:", 
+  for ip in srvr.networks['private']: print ip, '  ',
+  print
+
+
