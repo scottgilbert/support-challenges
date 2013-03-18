@@ -2,6 +2,7 @@
 # Challenge1 - Write a script that builds three 512 MB Cloud Servers that
 # following a similar naming convention. (ie., web1, web2, web3) and returns
 # the IP and login credentials for each server. Use any image you want.
+# Author: Scott Gilbert
 
 import os
 import time
@@ -29,7 +30,7 @@ while not build_done:
   for srv in server:
     if cs.servers.get(srv.id).networks == {}:  build_done = False
 
-# Print all the juicy goodness!
+# Print all the happy goodness!
 for srv in server:
   print
   srvr = cs.servers.get(srv.id)

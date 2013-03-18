@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Challenge2 - Write a script that clones a server (takes an image and deploys
 # the image as a new server). 
+# Author: Scott Gilbert
 
 # Accepts a single parameter of the uuid of the server to be cloned.
 
