@@ -7,10 +7,8 @@
 #  FQDN
 #  IP (either IPv4 or IPv6)
 
-import sys
-import os
+import sys, os, socket
 import pyrax
-import socket
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
@@ -67,7 +65,6 @@ def is_valid_ipv6_address(address):
   return True
 
 if __name__ == "__main__":
-  import sys
 
   if len(sys.argv) == 3:
     FQDN = sys.argv[1]
