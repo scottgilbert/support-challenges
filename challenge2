@@ -3,11 +3,13 @@
 # the image as a new server). 
 # Author: Scott Gilbert
 
-# Accepts a single parameter of the uuid of the server to be cloned.
+# Requires a single parameter of the uuid of the server to be cloned.
 
-import os
-import time
+import sys, os, time, datetime
 import pyrax
+
+# unbuffer stdout for pretty output
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
@@ -18,33 +20,37 @@ def cloneIt(serverUUID):
   source_server = cs.servers.get(serverUUID)
 
   # Request image of source server
-  image_id = cs.servers.create_image(serverUUID, source_server.name + '-img')
+  imageName='%s-%s' % (source_server.name,
+            datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
+  image_id = cs.servers.create_image(serverUUID, imageName)
 
   # Wait for image to complete
-  print "Waiting for image build to complete..."
-  while cs.images.get(image_id).status <> 'ACTIVE':
+  print "Waiting for image build to complete (usually takes 30-90 minutes)..."
+  newImage = cs.images.get(image_id)
+  while newImage.status <> 'ACTIVE':
     time.sleep(60)
-    print cs.images.get(image_id).status
+    newImage.get()
+    print "%s %d%%" % (newImage.status, newImage.progress)
 
   # Create new server using image 
+  print "Image complete!\nBuilding new server"
   newserver = cs.servers.create(source_server.name + '-clone', image_id,
                                 source_server.flavor['id'])
 
   # Wait for network info to become available
-  print "Waiting for new server build..."
-  while cs.servers.get(newserver.id).networks == {}:
+  print "Waiting for new server IP address assignment..."
+  while newserver.networks == {}:
     time.sleep(5)
+    newserver.get()
+    print '.',
 
   # Print info for new server
-  print
-  srvr = cs.servers.get(newserver.id)
-  print "Server Name:", srvr.name
+  print "\nServer Name:", newserver.name
   print "Root Password:", newserver.adminPass
   print "Public IPs:", 
-  for ip in srvr.networks['public']: print ip, '  ',
-  print
-  print "Private IP:", 
-  for ip in srvr.networks['private']: print ip, '  ',
+  for ip in newserver.networks['public']: print ip, '  ',
+  print "\nPrivate IP:", 
+  for ip in newserver.networks['private']: print ip, '  ',
   print
 
 
