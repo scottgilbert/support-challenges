@@ -6,8 +6,8 @@
 # Author: Scott Gilbert
 
 # Requires the following two parameters:
-#  directory
-#  container
+#  source directory containing files to be uploaded
+#  destination cloudfiles container
 
 import sys, os, time
 import pyrax
@@ -24,7 +24,8 @@ def UploadDirToContainer(ULdirectory, ULContainer):
   except:
     cont = cf.create_container(ULContainer)
 
-  print 'Uploading the contents of %s to CloudFiles container %s:' % (ULdirectory, ULContainer)
+  print 'Uploading the contents of %s to CloudFiles container %s:' % 
+        (ULdirectory, ULContainer)
   upload_key, total_bytes = cf.upload_folder(ULdirectory, cont)
 
   uploaded = 0
