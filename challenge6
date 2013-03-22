@@ -6,8 +6,6 @@
 # Requires one parameter:
 #  Cloudfiles container name to be created
 #
-# And accepts optional second parameter:
-#  Region in which the create the container (DFW, ORD, etc)
 
 import sys, os, time
 import pyrax
@@ -16,7 +14,7 @@ credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
 cf = pyrax.cloudfiles
 
-def createCDNContainer(newContainerName, region):
+def createCDNContainer(newContainerName):
 
   try:
     cf.get_container(newContainerName)
@@ -37,14 +35,9 @@ if __name__ == "__main__":
 
   if len(sys.argv) == 2:
     newContainerName = sys.argv[1]
-    region = ''
-    createCDNContainer(newContainerName, region)
-  elif len(sys.argv) == 3:
-    newContainerName = sys.argv[1]
-    region = sys.argv[2]
-    createCDNContainer(newContainerName, region)
+    createCDNContainer(newContainerName)
   else:
     print "Wrong number of parameters specified!"
-    print "Usage:  challenge6 <New Container Name> <(optional)Region>"
+    print "Usage:  challenge6 <New Container Name> "
 
 # vim: ts=2 sw=2 tw=78 expandtab
