@@ -67,8 +67,7 @@ def CreateLBandAddServers(LBName, servers):
   #create "nodes" for each cloudServer
   node = []
   for s in servers:
-    node.append(clb.Node(address=s.networks['private'][0], port=80,
-                          condition='ENABLED'))
+    node.append(clb.Node(address=s.networks['private'][0], port=80))
 
   # create the VIP
   vip = clb.VirtualIP(type="PUBLIC")
@@ -84,7 +83,6 @@ def CreateLBandAddServers(LBName, servers):
   print "\n"
 
   return lb
-
 
 if __name__ == "__main__":
 
