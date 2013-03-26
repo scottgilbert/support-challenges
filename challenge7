@@ -13,14 +13,14 @@ credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 
 # flavor = 512MB
 flavor = 2 
-# image = CentOS 6.3 (with simple webserver)
-image = '58e7b81e-e27c-46ec-8564-66f35ee92bd6'
+# image = CentOS 6.3 
+image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
 # Base name to user for new servers
 serverBaseName = 'web'
 # Number of servers to build
 numServers = 2
 # Name of the new LB instance
-LBName = 'TestLB7'
+LBName = 'LB-Challenge7'
 
 pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
