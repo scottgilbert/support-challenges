@@ -27,22 +27,21 @@ defaultIndexFileContents='''<html>
 Welcome to our sample website!
 </body>
 </html>'''
+defaultIndexFileName='index.html'
 
-def makeAWebsite(siteName, indexFileContents):
+def makeAWebsite(siteName, indexFileContents, indexFileName):
 
-  cfIndexFileName = 'index.html'
   # Create a new, public, randomly named, container 
   contName = pyrax.utils.random_name(12, ascii_only=True)
   cont = cf.create_container(contName)
-  print "Container", cont
+  print "New Container:", cont.name
   cf.make_container_public(cont)
 
   # Store index file contents in a new object 
-  indexObj = cf.store_object(cont, cfIndexFileName, indexFileContents)
-  print "Object: ", indexObj
+  indexObj = cf.store_object(cont, indexFileName, indexFileContents)
 
   # Make this new image the "index page" for the container
-  cf.set_container_web_index_page(cont, cfIndexFileName)
+  cf.set_container_web_index_page(cont, indexFileName)
 
   # create a CNAME record for the requested name to the CDN cloudFiles obj
   dns_rec = {"type": 'CNAME',
@@ -63,8 +62,8 @@ def makeAWebsite(siteName, indexFileContents):
         print "failed with:" 
         print err
         sys.exit(5)
+  print "Adding CNAME record for %s to zone %s" % (siteName, domain.name)
   rec = dns.add_record(domain,dns_rec)
-  print "DNS rec: ", rec
   print "Done!"
 
 if __name__ == "__main__":
@@ -74,14 +73,15 @@ if __name__ == "__main__":
     indexFileName = os.path.expanduser(sys.argv[2])
     if os.path.isfile(indexFileName):
       indexFileContents = open(indexFileName, 'r').read()
-      makeAWebsite(siteName, indexFileContents)
+      makeAWebsite(siteName, indexFileContents,
+                  os.path.basename(indexFileName))
     else:
       print 'The specified file "%s" does not exist' % indexFile
   elif len(sys.argv) == 2:
     siteName = os.path.expanduser(sys.argv[1])
-    makeAWebsite(siteName, defaultIndexFileContents)
+    makeAWebsite(siteName, defaultIndexFileContents, defaultIndexFileName)
   else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge8 <site name> <index file (optional)>"
+    print "Wrong number of parameters specified!\n"
+    print "Usage:  challenge8 <site name> <index file (optional)>\n"
 
 # vim: ts=2 sw=2 tw=78 expandtab
