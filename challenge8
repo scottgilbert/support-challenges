@@ -58,9 +58,9 @@ def makeAWebsite(siteName, indexFileContents, indexFileName):
         domain = dns.create(name=siteName, ttl=300, 
                             emailAddress='dnsmaster@%s' % siteName)
       except pyrax.exceptions.DomainCreationFailed as err:
-        print "Domain does not exist, and attempt to create it",
-        print "failed with:" 
-        print err
+        print "Domain '%s' does not exist," % siteName,
+        print "and attempt to create it failed with:" 
+        print str(err)
         sys.exit(5)
   print "Adding CNAME record for %s to zone %s" % (siteName, domain.name)
   rec = dns.add_record(domain,dns_rec)
