@@ -25,12 +25,6 @@ InstanceFlavor = 1
 # Volume Size (1 GB)
 VolumeSize = 1
 
-def GenerateRandomPassword(size):
-  """ Return random string of specified length"""
-  import random,string
-  validChars = string.ascii_letters + string.digits
-  return ''.join(random.choice(validChars) for x in range(size))
-
 def CreateADatabase(InstanceName, DBName, DBUserName):
   """Create a new CloudDatabase instance, Schema and User
   (with randomly generated password)
@@ -52,7 +46,7 @@ def CreateADatabase(InstanceName, DBName, DBUserName):
   dbs = dbi.create_database(DBName)
   
   # Create database user
-  userPassword = GenerateRandomPassword(10)
+  userPassword = pyrax.utils.random_name(10, ascii_only=True)
   dbu = dbi.create_user(DBUserName, userPassword, database_names=DBName)
 
   print "\n\nNew Database Created!\n"
