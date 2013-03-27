@@ -15,6 +15,10 @@ pyrax.set_credential_file(credential_file)
 cf = pyrax.cloudfiles
 
 def createCDNContainer(newContainerName):
+  """Create a new CloudFiles Container and enable public CDN access
+
+  If the specified container already exists, abort with error message.
+  """
 
   try:
     cf.get_container(newContainerName)

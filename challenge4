@@ -6,6 +6,9 @@
 # Requires the following two parameters:
 #  FQDN
 #  IP (either IPv4 or IPv6)
+#
+# Adds an "A record" if an IPv4 address is supplied, or a "AAAA record" if 
+# an IPv6 address is supplied.
 
 import sys, os, socket
 import pyrax
@@ -15,6 +18,18 @@ pyrax.set_credential_file(credential_file)
 dns = pyrax.cloud_dns
 
 def CreateDNSARecord(FQDN, IPAddr, RcdType):
+  """ Create specified DNS record in CloudDNS
+  
+  First attempt to add record to zone matching specified name.
+
+  If that fails, next try to add record to zone of specified name with
+  first element removed (ie: if "www.example.com" is specified, try adding
+  to "example.com" zone.
+
+  If that also fails, next try creating a new zone for the specified name.
+
+  If that also fails, then give up and report error.
+  """
 
   # if FQDN exists as a domain, add record to that domain
   # elif stripping off the first part results in a domain that exists, add to
@@ -45,6 +60,9 @@ def CreateDNSARecord(FQDN, IPAddr, RcdType):
   print "DNS record added for %s %s %s" % (FQDN, RcdType, IPAddr)
 
 def is_valid_ipv4_address(address):
+  """Return True if parameter is a valid IPv4 address, otherwise return
+  False
+  """
   try:
     addr= socket.inet_pton(socket.AF_INET, address)
   except AttributeError: 
@@ -58,6 +76,9 @@ def is_valid_ipv4_address(address):
   return True
 
 def is_valid_ipv6_address(address):
+  """Return True if parameter is a valid IPv6 address, otherwise return
+  False
+  """
   try:
     addr=socket.inet_pton(socket.AF_INET6, address)
   except socket.error:

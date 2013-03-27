@@ -26,11 +26,17 @@ InstanceFlavor = 1
 VolumeSize = 1
 
 def GenerateRandomPassword(size):
+  """ Return random string of specified length"""
   import random,string
   validChars = string.ascii_letters + string.digits
   return ''.join(random.choice(validChars) for x in range(size))
 
 def CreateADatabase(InstanceName, DBName, DBUserName):
+  """Create a new CloudDatabase instance, Schema and User
+  (with randomly generated password)
+
+  Print vital information about the newly created database.
+  """
   # Create database instance
   dbi = cdb.create(InstanceName, flavor=cdb.get_flavor(InstanceFlavor), 
                     volume=VolumeSize)

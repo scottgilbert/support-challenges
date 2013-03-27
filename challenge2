@@ -16,6 +16,16 @@ pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
 
 def cloneIt(serverUUID):
+  """Create a clone of an existing CloudServer.
+
+  An image of the "source" CloudServer is created and then a new
+  CloudServer is created from that image.
+  The new CloudServer is give a hostname of the source CloudServer
+  with "-clone" appended.
+
+  Function returns as soon as network IPs are available for the new
+  CloudServer. The build of the CloudServer will not yet be complete.
+  """
   # get info about source server
   source_server = cs.servers.get(serverUUID)
 

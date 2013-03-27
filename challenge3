@@ -17,6 +17,14 @@ pyrax.set_credential_file(credential_file)
 cf = pyrax.cloudfiles
 
 def UploadDirToContainer(ULdirectory, ULContainer):
+  """ Upload contents of a local directory to a CloudFiles Container
+
+  If the specified CloudFiles container does not already exist, then it
+  is created.
+
+  A simple progress message is displayed every 2 seconds and function
+  does not return until upload completes.
+  """
 
   # if container does not already exist, then create it!
   try:

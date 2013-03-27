@@ -25,7 +25,21 @@ pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
 
 def BuildSomeServers(flavor, image, serverBaseName, numServers):
-  
+  """ Request build of CloudServers of specified flavor and image.
+  Server hostnames are the combination of serverBaseName and a sequential
+  counter, starting with 1 and ending with numServers
+
+  Wait until at least network IPs are assigned before returning.  While 
+  waiting for network assignment, a simple "progress" output is 
+  generated, just to let the user know that *something* is happening.
+
+  Finally, print basic information (IPs, passwords, etc) for each new 
+  server is displayed.
+
+  Note: Function returns when network info is available, but server build
+  is probably not finished!
+  """
+    
   # Request build of new servers
   server=[]
   for server_num in xrange(1, numServers + 1):
@@ -58,6 +72,7 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
     for ip in srv.networks['private']: print '%s  ' % ip,
   
   print "\n"
+  return server
 
 if __name__ == "__main__":
 

@@ -30,6 +30,18 @@ Welcome to our sample website!
 defaultIndexFileName='index.html'
 
 def makeAWebsite(siteName, indexFileContents, indexFileName):
+  """Create a simple website on CloudFiles using specified content
+
+  Create a new, randomly named, public, CloudFiles container
+
+  Upload the specified file (or a default, if not specified) to the new
+  CloudFiles container.
+
+  Set the "Index Page" on the Container to be the uploaded file.
+
+  Create a DNS CNAME record for the specified name pointing to the CDN URL
+  of the new CloudFiles container.
+  """
 
   # Create a new, public, randomly named, container 
   contName = pyrax.utils.random_name(12, ascii_only=True)
