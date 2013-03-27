@@ -32,8 +32,8 @@ def UploadDirToContainer(ULdirectory, ULContainer):
   except:
     cont = cf.create_container(ULContainer)
 
-  print 'Uploading the contents of %s to CloudFiles container %s:' % 
-        (ULdirectory, ULContainer)
+  print 'Uploading the contents of %s to CloudFiles container %s:' % \
+    (ULdirectory, ULContainer)
   upload_key, total_bytes = cf.upload_folder(ULdirectory, cont)
 
   uploaded = 0
@@ -49,10 +49,15 @@ if __name__ == "__main__":
   if len(sys.argv) == 3:
     ULDir = os.path.expanduser(sys.argv[1])
     ULContainer = sys.argv[2]
-    if os.path.isdir(ULDir):
-      UploadDirToContainer(ULDir, ULContainer);
+    # pyrax silently ignores 'no premissions to read dir' errors, so we check
+    # for "read permissions" before calling pyrax
+    if os.access(ULDir, os.R_OK):
+      try:
+        UploadDirToContainer(ULDir, ULContainer)
+      except pyrax.exceptions.FolderNotFound: 
+        print 'The specified directory "%s" does not exist' % ULDir
     else:
-      print 'The specified directory "%s" does not exist' % ULDir
+      print 'ERROR!\nYou do not have read access to directory "%s"' % ULDir
   else:
     print "Wrong number of parameters specified!"
     print "Usage:  challenge3 <directory> <CloudFiles Container>"
