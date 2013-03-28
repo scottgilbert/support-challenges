@@ -7,6 +7,8 @@
 
 import sys, os, time, datetime
 import pyrax
+import challenge1 as c1
+
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
@@ -43,23 +45,7 @@ def cloneIt(serverUUID):
   print "Image complete!\nBuilding new server"
   newserver = cs.servers.create(source_server.name + '-clone', image_id,
                                 source_server.flavor['id'])
-
-  # Wait for network info to become available
-  print "Waiting for new server IP address assignment..."
-  while newserver.networks == {}:
-    time.sleep(5)
-    newserver.get()
-    print '.',
-
-  # Print info for new server
-  print "\nServer Name:", newserver.name
-  print "Root Password:", newserver.adminPass
-  print "Public IPs:", 
-  for ip in newserver.networks['public']: print ip, '  ',
-  print "\nPrivate IP:", 
-  for ip in newserver.networks['private']: print ip, '  ',
-  print
-
+  return newserver
 
 if __name__ == "__main__":
 
@@ -67,7 +53,12 @@ if __name__ == "__main__":
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   if len(sys.argv) == 2:
-    cloneIt(sys.argv[1]);
+    newserver = cloneIt(sys.argv[1]);
+    # Wait for network info to become available
+    c1.waitForServerNetworks([newserver])
+    # Print info for new server
+    c1.printServersInfo([newserver])
+
   else:
     print "Wrong number of parameters specified!"
     print "Usage:  challenge2 <server uuid>"
