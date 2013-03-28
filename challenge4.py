@@ -17,7 +17,7 @@ credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
 dns = pyrax.cloud_dns
 
-def CreateDNSARecord(FQDN, IPAddr, RcdType):
+def createDNSRecord(FQDN, IPAddr, RcdType):
   """ Create specified DNS record in CloudDNS
   
   First attempt to add record to zone matching specified name.
@@ -92,9 +92,9 @@ if __name__ == "__main__":
     IPAddr = sys.argv[2]
 
     if is_valid_ipv4_address(IPAddr):
-      CreateDNSARecord(FQDN, IPAddr, 'A')
+      createDNSRecord(FQDN, IPAddr, 'A')
     elif is_valid_ipv6_address(IPAddr):
-      CreateDNSARecord(FQDN, IPAddr, 'AAAA')
+      createDNSRecord(FQDN, IPAddr, 'AAAA')
     else:
       print 'The specified IP address "%s" is not valid' % IPAddr
 
