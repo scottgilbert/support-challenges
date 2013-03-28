@@ -21,11 +21,16 @@ def createCDNContainer(newContainerName):
   """
 
   try:
-    cf.get_container(newContainerName)
+    existingContainer = cf.get_container(newContainerName)
     # if we were able to get container info, then it already exists
-    print 'The container %s already exists! ' % newContainerName,
-    print 'We do not want to accidentally publish a private container,'
-    print 'so no action has been taken.'
+    print 'The container %s already exists! ' % newContainerName
+    if existingContainer.cdn_enabled:
+      print 'The container is already CDN enabled,',
+      print 'so no further action has been taken'
+    else:
+      print 'The container is not currently CDN enabled.'
+      print 'We do not want to accidentally publish a private container,',
+      print 'so no action has been taken.'
     return
 
   except :
