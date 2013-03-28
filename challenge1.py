@@ -7,9 +7,6 @@
 import os, sys, time
 import pyrax
 
-# unbuffer stdout for pretty output
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 
 # flavor = 512MB
@@ -75,6 +72,9 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
   return server
 
 if __name__ == "__main__":
+
+  # unbuffer stdout for pretty output
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   BuildSomeServers(flavor, image, serverBaseName, numServers)
 

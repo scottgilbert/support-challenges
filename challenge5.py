@@ -11,10 +11,6 @@
 import sys, os, time
 import pyrax
 
-# unbuffer stdout for pretty output
-import sys
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-
 credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
 cdb = pyrax.cloud_databases
@@ -57,6 +53,9 @@ def CreateADatabase(InstanceName, DBName, DBUserName):
   print "Password: %s" % userPassword
 
 if __name__ == "__main__":
+
+  # unbuffer stdout for pretty output
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   if len(sys.argv) == 4:
     InstanceName = sys.argv[1]

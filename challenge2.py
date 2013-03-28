@@ -8,9 +8,6 @@
 import sys, os, time, datetime
 import pyrax
 
-# unbuffer stdout for pretty output
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
@@ -65,7 +62,9 @@ def cloneIt(serverUUID):
 
 
 if __name__ == "__main__":
-  import sys
+
+  # unbuffer stdout for pretty output
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   if len(sys.argv) == 2:
     cloneIt(sys.argv[1]);
