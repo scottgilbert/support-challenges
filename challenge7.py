@@ -5,9 +5,9 @@
 
 import os, sys, time
 import pyrax
-
-# unbuffer stdout for pretty output
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+# import challenge1 for its buildSomeServers fuction.   Code re-use is not
+# cheating - its good practice!
+import challenge1
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 
@@ -25,57 +25,6 @@ LBName = 'LB-Challenge7'
 pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
 
-def BuildSomeServers(flavor, image, serverBaseName, numServers):
-  """ Request build of CloudServers of specified flavor and image.
-  Server hostnames are the combination of serverBaseName and a sequential
-  counter, starting with 1 and ending with numServers.
-
-  Wait until at least network IPs are assigned before returning.  While 
-  waiting for network assignment, a simple "progress" output is 
-  generated, just to let the user know that *something* is happening.
-
-  Finally, print basic information (IPs, passwords, etc) for each new 
-  server is displayed.
-
-  Note: Function returns when network info is available, but server build
-  is probably not finished!
-  """
-
-  
-  # Request build of new servers
-  server=[]
-  for server_num in xrange(1, numServers + 1):
-    print "Requesting build for server %s%d" % (serverBaseName, server_num)
-    server.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
-                                    image, flavor))
-  
-  # Wait for all servers to get IP addrs assigned
-  print "\nWaiting for IP addresses to be assigned..."
-  networks_assigned = False
-  while not networks_assigned:
-    time.sleep(2)
-    print '.', 
-    networks_assigned = True
-    for srv in server:
-      srv.get()
-      if srv.networks == {} and srv.status <> 'ERROR':  
-        networks_assigned = False
-        break
-  
-  # Print all the happy goodness!
-  print "Done!\n"
-  for srv in server:
-    print "\n\nServer Name: %s" % srv.name
-    print "Status: %s" % srv.status
-    print "Root Password: %s" % srv.adminPass
-    print "Public IPs:", 
-    for ip in srv.networks['public']: print '%s  ' % ip,
-    print "\nPrivate IP:", 
-    for ip in srv.networks['private']: print '%s  ' % ip,
-  
-  print "\n"
-  return server
- 
 def CreateLBandAddServers(LBName, servers):
   """Create a new CloudLoadbalancer instance and add CloudServer to
   loadbalancing pool.
@@ -104,7 +53,10 @@ def CreateLBandAddServers(LBName, servers):
 
 if __name__ == "__main__":
 
-  servers = BuildSomeServers(flavor, image, serverBaseName, numServers)
+  # unbuffer stdout for pretty output
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+  servers = challenge1.BuildSomeServers(flavor, image, serverBaseName, numServers)
 
   lb = CreateLBandAddServers(LBName, servers)
 
