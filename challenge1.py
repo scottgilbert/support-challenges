@@ -38,28 +38,36 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
   """
     
   # Request build of new servers
-  server=[]
+  servers=[]
   for server_num in xrange(1, numServers + 1):
     print "Requesting build for server %s%d" % (serverBaseName, server_num)
-    server.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
+    servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
                                     image, flavor))
-  
-  # Wait for all servers to get IP addrs assigned
+  return servers
+
+def waitForServerNetworks(servers):  
+  """Given an array of pyrax server objects, wait until all of the servers
+  have network IPs assigned.  Print a little activity indicator to let the
+  user know that we are not stuck.
+  """
   print "\nWaiting for IP addresses to be assigned..."
   networks_assigned = False
   while not networks_assigned:
     time.sleep(2)
     print '.', 
     networks_assigned = True
-    for srv in server:
+    for srv in servers:
       srv.get()
       if srv.networks == {} and srv.status <> 'ERROR':  
         networks_assigned = False
         break
   
-  # Print all the happy goodness!
+def printServersInfo(servers):
+  """Given an array of pyrax server objects, print basic information about
+  each one.
+  """
   print "Done!\n"
-  for srv in server:
+  for srv in servers:
     print "\n\nServer Name: %s" % srv.name
     print "Status: %s" % srv.status
     print "Root Password: %s" % srv.adminPass
@@ -69,13 +77,14 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
     for ip in srv.networks['private']: print '%s  ' % ip,
   
   print "\n"
-  return server
 
 if __name__ == "__main__":
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  BuildSomeServers(flavor, image, serverBaseName, numServers)
+  servers = BuildSomeServers(flavor, image, serverBaseName, numServers)
+  waitForServerNetworks(servers)
+  printServersInfo(servers)
 
 # vim: ts=2 sw=2 tw=78 expandtab

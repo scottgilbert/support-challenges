@@ -5,9 +5,8 @@
 
 import os, sys, time
 import pyrax
-# import challenge1 for its buildSomeServers fuction.   Code re-use is not
-# cheating - its good practice!
-import challenge1
+# Code re-use is not cheating - its good practice!
+import challenge1 as c1
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 
@@ -56,7 +55,9 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = challenge1.BuildSomeServers(flavor, image, serverBaseName, numServers)
+  servers = c1.BuildSomeServers(flavor, image, serverBaseName, numServers)
+  c1.waitForServerNetworks(servers)
+  c1.printServersInfo(servers)
 
   lb = CreateLBandAddServers(LBName, servers)
 
