@@ -14,6 +14,7 @@
 
 import sys, os, time
 import pyrax
+import challenge4 as c4
 
 credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(credential_file)
@@ -55,27 +56,7 @@ def makeAWebsite(siteName, indexFileContents, indexFileName):
   # Make this new image the "index page" for the container
   cf.set_container_web_index_page(cont, indexFileName)
 
-  # create a CNAME record for the requested name to the CDN cloudFiles obj
-  dns_rec = {"type": 'CNAME',
-            "name": siteName,
-            "data": cont.cdn_uri.lstrip('http://'),
-            "ttl": 300}
-  try:
-    domain = dns.find(name=siteName)
-  except pyrax.exceptions.NotFound:
-    try:
-      domain = dns.find(name=siteName.split('.',1)[1])
-    except pyrax.exceptions.NotFound:
-      try:
-        domain = dns.create(name=siteName, ttl=300, 
-                            emailAddress='dnsmaster@%s' % siteName)
-      except pyrax.exceptions.DomainCreationFailed as err:
-        print "Domain '%s' does not exist," % siteName,
-        print "and attempt to create it failed with:" 
-        print str(err)
-        sys.exit(5)
-  print "Adding CNAME record for %s to zone %s" % (siteName, domain.name)
-  rec = dns.add_record(domain,dns_rec)
+  c4.createDNSRecord(siteName, cont.cdn_uri.lstrip('http://'), 'CNAME')
   print "Done!"
 
 if __name__ == "__main__":
