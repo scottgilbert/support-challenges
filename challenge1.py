@@ -33,8 +33,8 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
   Finally, print basic information (IPs, passwords, etc) for each new 
   server is displayed.
 
-  Note: Function returns when network info is available, but server build
-  is probably not finished!
+  Note: Function returns immediately, network info and server build are almost
+  certainly not complete yet.
   """
     
   # Request build of new servers
