@@ -24,14 +24,10 @@ cs = pyrax.cloudservers
 def BuildSomeServers(flavor, image, serverBaseName, numServers):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
-  counter, starting with 1 and ending with numServers
+  counter, starting with 1 and ending with numServers - unless number of 
+  servers is 1, then just the serverBaseName is used.
 
-  Wait until at least network IPs are assigned before returning.  While 
-  waiting for network assignment, a simple "progress" output is 
-  generated, just to let the user know that *something* is happening.
-
-  Finally, print basic information (IPs, passwords, etc) for each new 
-  server is displayed.
+  Returns array of server objects.
 
   Note: Function returns immediately, network info and server build are almost
   certainly not complete yet.
@@ -39,10 +35,14 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
     
   # Request build of new servers
   servers=[]
-  for server_num in xrange(1, numServers + 1):
-    print "Requesting build for server %s%d" % (serverBaseName, server_num)
-    servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
-                                    image, flavor))
+  if numServers == 1:
+    print "Requesting build for server %s" % serverBaseName
+    servers.append(cs.servers.create(serverBaseName, image, flavor))
+  else:
+    for server_num in xrange(1, numServers + 1):
+      print "Requesting build for server %s%d" % (serverBaseName, server_num)
+      servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
+                                      image, flavor))
   return servers
 
 def waitForServerNetworks(servers):  
