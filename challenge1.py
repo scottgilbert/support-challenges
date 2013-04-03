@@ -21,7 +21,7 @@ numServers = 3
 pyrax.set_credential_file(credential_file)
 cs = pyrax.cloudservers
 
-def BuildSomeServers(flavor, image, serverBaseName, numServers):
+def BuildSomeServers(flavor, image, serverBaseName, numServers, insertFiles={}):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
   counter, starting with 1 and ending with numServers - unless number of 
@@ -37,12 +37,13 @@ def BuildSomeServers(flavor, image, serverBaseName, numServers):
   servers=[]
   if numServers == 1:
     print "Requesting build for server %s" % serverBaseName
-    servers.append(cs.servers.create(serverBaseName, image, flavor))
+    servers.append(cs.servers.create(serverBaseName, image, flavor,
+                    files=insertFiles))
   else:
     for server_num in xrange(1, numServers + 1):
       print "Requesting build for server %s%d" % (serverBaseName, server_num)
       servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
-                                      image, flavor))
+                                      image, flavor, files=insertFiles))
   return servers
 
 def waitForServerNetworks(servers):  
