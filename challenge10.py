@@ -29,6 +29,8 @@ clb = pyrax.cloud_loadbalancers
 cf = pyrax.cloudfiles
 
 def CloudLBPublicIPv4(lb):
+  """Given a pyrax CloudLoadbalancer object, return the IPv4 VIP address
+  """
   for addr in  lb.virtual_ips:
     if c4.is_valid_ipv4_address(addr):
       return addr
@@ -36,6 +38,8 @@ def CloudLBPublicIPv4(lb):
   return False
 
 def CloudLBPublicIPv6(lb):
+  """Given a pyrax CloudLoadbalancer object, return the IPv6 VIP address
+  """
   for addr in  lb.virtual_ips:
     if c4.is_valid_ipv6_address(addr):
       return addr
@@ -46,7 +50,7 @@ def waitForLBBuild(lb):
   """Given a pyrax loadbalancer object, wait until the loadbalancer build
      is complete.  Print a little activity indicator to let the
       user know that we are not stuck.
-"""
+  """
   print "\nWaiting for loadbalancer to become active..."
   lb.get()
   while lb.status != 'ACTIVE':

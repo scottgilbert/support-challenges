@@ -21,6 +21,9 @@ cs = pyrax.cloudservers
 dns = pyrax.cloud_dns
 
 def isValidImage(image):
+  """Check the validity of a CloudServer image uuid.
+  Return True if image is valid, False otherwise.
+  """
   try:
     cs.images.get(image)
     return True
@@ -28,6 +31,9 @@ def isValidImage(image):
     return False
 
 def isValidFlavor(flavor):
+  """Check the validity of a CloudServer flavor-id.
+  Return True if flavor-id is valid, False otherwise.
+  """
   try:
     cs.flavors.get(flavor)
     return True
@@ -35,6 +41,9 @@ def isValidFlavor(flavor):
     return False
 
 def isValidHostname(hostname):
+  """Check for basic validity of a FQDN
+  Return True if the FQDN is valid, False otherwise.
+  """
   if len(hostname) > 255:
     return False
   if hostname[-1:] == ".":
@@ -43,6 +52,9 @@ def isValidHostname(hostname):
   return all(allowed.match(x) for x in hostname.split("."))
 
 def CloudServerPublicIPv4(server):
+  """Given a pyrax cloudserver object, extract and return the server's primary
+  public IPv4 address.
+  """
   for addr in  server.networks['public']:
     if c4.is_valid_ipv4_address(addr):
       return addr
@@ -50,6 +62,9 @@ def CloudServerPublicIPv4(server):
   return False
 
 def CloudServerPublicIPv6(server):
+  """Given a pyrax cloudserver object, extract and return the server's primary
+  public IPv4 address.
+  """
   for addr in  server.networks['public']:
     if c4.is_valid_ipv6_address(addr):
       return addr
