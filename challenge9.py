@@ -15,12 +15,8 @@ import pyrax
 import challenge1 as c1
 import challenge4 as c4
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cs = pyrax.cloudservers
-dns = pyrax.cloud_dns
 
-def isValidImage(image):
+def isValidImage(cs, image):
   """Check the validity of a CloudServer image uuid.
   Return True if image is valid, False otherwise.
   """
@@ -30,7 +26,7 @@ def isValidImage(image):
   except:
     return False
 
-def isValidFlavor(flavor):
+def isValidFlavor(cs, flavor):
   """Check the validity of a CloudServer flavor-id.
   Return True if flavor-id is valid, False otherwise.
   """
@@ -73,6 +69,10 @@ def CloudServerPublicIPv6(server):
 
 
 if __name__ == "__main__":
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cs = pyrax.cloudservers
+  dns = pyrax.cloud_dns
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -92,13 +92,13 @@ if __name__ == "__main__":
       sys.exit(4)
 
     
-    servers = c1.BuildSomeServers(flavor, image, fqdn, 1)
+    servers = c1.BuildSomeServers(cs, flavor, image, fqdn, 1)
     c1.waitForServerNetworks(servers)
     c1.printServersInfo(servers)
     pubIPv4 = CloudServerPublicIPv4(servers[0])
-    c4.createDNSRecord(fqdn, pubIPv4, 'A')
+    c4.createDNSRecord(dns, fqdn, pubIPv4, 'A')
     pubIPv6 = CloudServerPublicIPv6(servers[0])
-    c4.createDNSRecord(fqdn, pubIPv6, 'AAAA')
+    c4.createDNSRecord(dns, fqdn, pubIPv6, 'AAAA')
 
   else:
     print "Wrong number of parameters specified!\n"

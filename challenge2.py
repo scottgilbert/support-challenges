@@ -10,11 +10,7 @@ import pyrax
 import challenge1 as c1
 
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cs = pyrax.cloudservers
-
-def cloneIt(serverUUID):
+def cloneIt(cs, serverUUID):
   """Create a clone of an existing CloudServer.
 
   An image of the "source" CloudServer is created and then a new
@@ -49,11 +45,15 @@ def cloneIt(serverUUID):
 
 if __name__ == "__main__":
 
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cs = pyrax.cloudservers
+
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   if len(sys.argv) == 2:
-    newserver = cloneIt(sys.argv[1]);
+    newserver = cloneIt(cs, sys.argv[1]);
     # Wait for network info to become available
     c1.waitForServerNetworks([newserver])
     # Print info for new server

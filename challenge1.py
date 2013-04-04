@@ -7,21 +7,7 @@
 import os, sys, time
 import pyrax
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-
-# flavor = 512MB
-flavor = 2 
-# image = CentOS 6.3
-image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
-# Base name to user for new servers
-serverBaseName = 'web'
-# Number of servers to build
-numServers = 3
-
-pyrax.set_credential_file(credential_file)
-cs = pyrax.cloudservers
-
-def BuildSomeServers(flavor, image, serverBaseName, numServers, insertFiles={}):
+def BuildSomeServers(cs, flavor, image, serverBaseName, numServers, insertFiles={}):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
   counter, starting with 1 and ending with numServers - unless number of 
@@ -80,11 +66,25 @@ def printServersInfo(servers):
   print "\n"
 
 if __name__ == "__main__":
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  
+  # flavor = 512MB
+  flavor = 2 
+  # image = CentOS 6.3
+  image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
+  # Base name to user for new servers
+  serverBaseName = 'web'
+  # Number of servers to build
+  numServers = 3
+  
+  pyrax.set_credential_file(credential_file)
+  cs = pyrax.cloudservers
+
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = BuildSomeServers(flavor, image, serverBaseName, numServers)
+  servers = BuildSomeServers(cs, flavor, image, serverBaseName, numServers)
   waitForServerNetworks(servers)
   printServersInfo(servers)
 

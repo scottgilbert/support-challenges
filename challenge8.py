@@ -16,21 +16,8 @@ import sys, os, time
 import pyrax
 import challenge4 as c4
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cf = pyrax.cloudfiles
-dns = pyrax.cloud_dns
 
-defaultIndexFileContents='''<html>
-<head><title>Sample Website Served by CloudFiles</title></head>
-<body><b>Sample Website Served by CloudFiles</b><br>
-<br>
-Welcome to our sample website!
-</body>
-</html>'''
-defaultIndexFileName='index.html'
-
-def makeAWebsite(siteName, indexFileContents, indexFileName):
+def makeAWebsite(cf, dns, siteName, indexFileContents, indexFileName):
   """Create a simple website on CloudFiles using specified content
 
   Create a new, randomly named, public, CloudFiles container
@@ -56,23 +43,37 @@ def makeAWebsite(siteName, indexFileContents, indexFileName):
   # Make this new image the "index page" for the container
   cf.set_container_web_index_page(cont, indexFileName)
 
-  c4.createDNSRecord(siteName, cont.cdn_uri.lstrip('http://'), 'CNAME')
+  c4.createDNSRecord(dns, siteName, cont.cdn_uri.lstrip('http://'), 'CNAME')
   print "Done!"
 
 if __name__ == "__main__":
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cf = pyrax.cloudfiles
+  dns = pyrax.cloud_dns
+  
+  defaultIndexFileContents='''<html>
+  <head><title>Sample Website Served by CloudFiles</title></head>
+  <body><b>Sample Website Served by CloudFiles</b><br>
+  <br>
+  Welcome to our sample challenge8 website!
+  <br>
+  </body>
+  </html>'''
+  defaultIndexFileName='index.html'
 
   if len(sys.argv) == 3:
     siteName = os.path.expanduser(sys.argv[1])
     indexFileName = os.path.expanduser(sys.argv[2])
     if os.path.isfile(indexFileName):
       indexFileContents = open(indexFileName, 'r').read()
-      makeAWebsite(siteName, indexFileContents,
+      makeAWebsite(cf, dns, siteName, indexFileContents,
                   os.path.basename(indexFileName))
     else:
       print 'The specified file "%s" does not exist' % indexFile
   elif len(sys.argv) == 2:
     siteName = os.path.expanduser(sys.argv[1])
-    makeAWebsite(siteName, defaultIndexFileContents, defaultIndexFileName)
+    makeAWebsite(cf, dns, siteName, defaultIndexFileContents, defaultIndexFileName)
   else:
     print "Wrong number of parameters specified!\n"
     print "Usage:  challenge8 <site name> <index file (optional)>\n"

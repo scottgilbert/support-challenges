@@ -10,11 +10,7 @@
 import sys, os, time
 import pyrax
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cf = pyrax.cloudfiles
-
-def createCDNContainer(newContainerName):
+def createCDNContainer(cf, newContainerName):
   """Create a new CloudFiles Container and enable public CDN access
 
   If the specified container already exists, abort with error message.
@@ -42,9 +38,13 @@ def createCDNContainer(newContainerName):
 
 if __name__ == "__main__":
 
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cf = pyrax.cloudfiles
+
   if len(sys.argv) == 2:
     newContainerName = sys.argv[1]
-    createCDNContainer(newContainerName)
+    createCDNContainer(cf, newContainerName)
   else:
     print "Wrong number of parameters specified!"
     print "Usage:  challenge6 <New Container Name> "

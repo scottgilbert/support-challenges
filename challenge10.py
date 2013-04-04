@@ -21,13 +21,6 @@ import challenge4 as c4
 import challenge7 as c7
 import challenge9 as c9
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cs = pyrax.cloudservers
-dns = pyrax.cloud_dns
-clb = pyrax.cloud_loadbalancers
-cf = pyrax.cloudfiles
-
 def CloudLBPublicIPv4(lb):
   """Given a pyrax CloudLoadbalancer object, return the IPv4 VIP address
   """
@@ -60,6 +53,12 @@ def waitForLBBuild(lb):
 
 
 if __name__ == "__main__":
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cs = pyrax.cloudservers
+  dns = pyrax.cloud_dns
+  clb = pyrax.cloud_loadbalancers
+  cf = pyrax.cloudfiles
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -70,7 +69,6 @@ if __name__ == "__main__":
   image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
   # Number of servers to build
   numServers = 2
-
 
   if len(sys.argv) == 4:
     fqdn = sys.argv[1]
@@ -90,16 +88,16 @@ if __name__ == "__main__":
     sshkey = open(sshkeyFile, 'r').read()
     authkeyFile = '/root/.ssh/authorized_keys'
     serverFiles = {authkeyFile: sshkey}
-    servers = c1.BuildSomeServers(flavor, image, fqdn, numServers, serverFiles)
+    servers = c1.BuildSomeServers(cs, flavor, image, fqdn, numServers, serverFiles)
     c1.waitForServerNetworks(servers)
     c1.printServersInfo(servers)
     # Create Loadbalancer
     LBName = 'LB' + fqdn
     print "Creating Loadbalancer %s" % LBName
-    lb = c7.CreateLBandAddServers(LBName, servers)
+    lb = c7.CreateLBandAddServers(clb, LBName, servers)
     waitForLBBuild(lb)
     # create DNS entries for the LB
-    c4.createDNSRecord(fqdn, lb.virtual_ips[0].address, 'A')
+    c4.createDNSRecord(dns, fqdn, lb.virtual_ips[0].address, 'A')
     # add LB monitor
     lb.add_health_monitor(type="CONNECT", delay=5, timeout=2,
             attemptsBeforeDeactivation=1)
