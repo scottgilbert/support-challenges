@@ -8,7 +8,7 @@ import pyrax
 import challenge1 as c1
 
 def CreateLBandAddServers(clb, LBName, servers):
-  """Create a new CloudLoadbalancer instance and add CloudServer to
+  """Create a new CloudLoadbalancer instance and add CloudServers to
   loadbalancing pool.
   """
 
@@ -25,14 +25,19 @@ def CreateLBandAddServers(clb, LBName, servers):
           nodes=node, virtual_ips=[vip], algorithm='ROUND_ROBIN')
   print "\nNew Loadbalancer %s:\n" % lb.name 
   print " VIP: %s" % lb.virtual_ips[0].address
+  print " protocol: %s" % lb.protocol
+  print " port: %s" % lb.port
   print " Nodes:"
   for n in lb.nodes:
-    print "  addr: %s  port: %s  status: %s" % (n.address, n.port, n.condition)
+    print "   addr: %s  port: %s  status: %s" % (n.address, n.port, n.condition)
   print "\n"
 
   return lb
 
 if __name__ == "__main__":
+  print "Challenge7 - Write a script that will create 2 Cloud Servers and"
+  print "add them as nodes to a new Cloud Load Balancer.\n\n"
+ 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   
   # flavor = 512MB

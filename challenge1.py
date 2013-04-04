@@ -66,6 +66,11 @@ def printServersInfo(servers):
   print "\n"
 
 if __name__ == "__main__":
+  print "Challenge1 - Write a script that builds three 512 MB Cloud Servers"
+  print "that following a similar naming convention. (ie., web1, web2, web3)"
+  print "and returns the IP and login credentials for each server. Use any"
+  print "image you want.\n\n"
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   
   # flavor = 512MB

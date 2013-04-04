@@ -53,6 +53,15 @@ def waitForLBBuild(lb):
 
 
 if __name__ == "__main__":
+  print "Challenge10 - Write an application that will:"
+  print " - Create 2 servers, supplying a ssh key to be installed at",
+  print " /root/.ssh/authorized_keys."
+  print " - Create a load balancer"
+  print " - Add the 2 new servers to the LB"
+  print " - Set up LB monitor and custom error page."
+  print " - Create a DNS record based on a FQDN for the LB VIP." 
+  print " - Write the error page html to a file in cloud files for backup.\n\n"
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cs = pyrax.cloudservers

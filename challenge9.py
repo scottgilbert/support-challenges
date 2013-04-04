@@ -69,6 +69,11 @@ def CloudServerPublicIPv6(server):
 
 
 if __name__ == "__main__":
+  print "Challenge9 - Write an application that when passed the arguments"
+  print "FQDN, image, and flavor it creates a server of the specified image"
+  print "and flavor with the same name as the fqdn, and creates a DNS entry"
+  print "for the fqdn pointing to the server's public IP.\n\n"
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cs = pyrax.cloudservers
@@ -84,10 +89,10 @@ if __name__ == "__main__":
     if not isValidHostname(fqdn):
       print "This does not appear to be a valid image-uuid: %s" % image
       sys.exit(2)
-    if not isValidImage(image):
+    if not isValidImage(cs, image):
       print "This does not appear to be a valid image-uuid: %s" % image
       sys.exit(3)
-    if not isValidFlavor(flavor):
+    if not isValidFlavor(cs, flavor):
       print "This does not appear to be a valid flavor-id: %s" % flavor
       sys.exit(4)
 

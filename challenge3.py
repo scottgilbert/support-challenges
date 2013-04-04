@@ -26,10 +26,12 @@ def UploadDirToContainer(cf, ULdirectory, ULContainer):
   # if container does not already exist, then create it!
   try:
     cont = cf.get_container(ULContainer)
+    print "The container %s already exists. We'll use it!" % ULContainer
   except:
+    print "The container %s did not yet exit - creating it now!" % ULContainer
     cont = cf.create_container(ULContainer)
 
-  print 'Uploading the contents of %s to CloudFiles container %s:' % \
+  print "\nUploading the contents of %s to CloudFiles container %s:" % \
     (ULdirectory, ULContainer)
   upload_key, total_bytes = cf.upload_folder(ULdirectory, cont)
 
@@ -42,6 +44,11 @@ def UploadDirToContainer(cf, ULdirectory, ULContainer):
   print "Done!"
 
 if __name__ == "__main__":
+  print "Challenge3 - Write a script that accepts a directory as an argument"
+  print "as well as a container name. The script should upload the contents"
+  print "of the specified directory to the container (or create it if it"
+  print "doesn't exist). The script should handle errors appropriately."
+  print "(Check for invalid paths, etc.)\n\n" 
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)

@@ -27,6 +27,7 @@ def cloneIt(cs, serverUUID):
   # Request image of source server
   imageName='%s-%s' % (source_server.name,
             datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
+  print "Requesting image of source server. Image will be named %s" % imageName
   image_id = cs.servers.create_image(serverUUID, imageName)
 
   # Wait for image to complete
@@ -38,12 +39,15 @@ def cloneIt(cs, serverUUID):
     print "%s %d%%" % (newImage.status, newImage.progress)
 
   # Create new server using image 
-  print "Image complete!\nBuilding new server"
-  newserver = cs.servers.create(source_server.name + '-clone', image_id,
+  newServerName = source_server.name + '-clone'
+  print "Image complete!\nBuilding new server named %s" % newServerName
+  newserver = cs.servers.create(newServerName, image_id,
                                 source_server.flavor['id'])
   return newserver
 
 if __name__ == "__main__":
+  print "Challenge2 - Write a script that clones a server (takes an image and"
+  print "deploys the image as a new server).\n\n" 
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)

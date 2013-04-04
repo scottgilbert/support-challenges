@@ -2,6 +2,8 @@
 # Challenge5 - Write a script that creates a Cloud Database instance. This
 # instance should contain at least one database, and the database should have
 # at least one user that can connect to it.
+# Author: Scott Gilbert
+
 
 # Requires the following two parameters:
 #  DB Instance Name
@@ -18,6 +20,7 @@ def CreateADatabase(cdb, InstanceName, DBName, DBUserName):
   Print vital information about the newly created database.
   """
   # Create database instance
+  print "Creating database instance %s" % InstanceName
   dbi = cdb.create(InstanceName, flavor=cdb.get_flavor(InstanceFlavor), 
                     volume=VolumeSize)
 
@@ -38,11 +41,14 @@ def CreateADatabase(cdb, InstanceName, DBName, DBUserName):
   print "\n\nNew Database Created!\n"
   print "Instance Name: %s" % dbi.name
   print "Instance Hostname: %s" % dbi.hostname
-  print "Schema Name: %s" % dbs.name
+  print "Schema (database) Name: %s" % dbs.name
   print "User: %s" % dbu.name
   print "Password: %s" % userPassword
 
 if __name__ == "__main__":
+  print "Challenge5 - Write a script that creates a Cloud Database instance."
+  print "This instance should contain at least one database, and the database"
+  print "should have at least one user that can connect to it.\n\n"
 
   credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)

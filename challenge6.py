@@ -37,6 +37,8 @@ def createCDNContainer(cf, newContainerName):
     print "Done!"
 
 if __name__ == "__main__":
+  print "Challenge6 - Write a script that creates a CDN-enabled container in"
+  print "Cloud Files.\n\n"
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)

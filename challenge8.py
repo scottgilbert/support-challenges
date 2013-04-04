@@ -47,6 +47,12 @@ def makeAWebsite(cf, dns, siteName, indexFileContents, indexFileName):
   print "Done!"
 
 if __name__ == "__main__":
+  print "Challenge8 - Write a script that will create a static webpage"
+  print "served out of Cloud Files. The script must create a new container,"
+  print "CDN enable it, enable it to serve an index file, create an index"
+  print "file object, upload the object to the container, and create a CNAME"
+  print "record pointing to the CDN URL of the container.\n\n"
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cf = pyrax.cloudfiles

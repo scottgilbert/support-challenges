@@ -52,8 +52,9 @@ def createDNSRecord(dns, FQDN, IPAddr, RcdType):
         print err
         sys.exit(5)
 
-  rec = dns.add_record(domain,dns_rec)
-  print "DNS record added for %s %s %s" % (FQDN, RcdType, IPAddr)
+  rec = domain.add_record(dns_rec)
+  print "DNS record %s %s %s added to zone %s" % (FQDN, RcdType, IPAddr, 
+	domain.name)
 
 def is_valid_ipv4_address(address):
   """Return True if parameter is a valid IPv4 address, otherwise return
@@ -82,6 +83,9 @@ def is_valid_ipv6_address(address):
   return True
 
 if __name__ == "__main__":
+  print "Challenge4 - Write a script that uses Cloud DNS to create a new A"
+  print "record when passed a FQDN and IP address as arguments.\n\n"
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   dns = pyrax.cloud_dns
