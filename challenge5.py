@@ -11,17 +11,7 @@
 import sys, os, time
 import pyrax
 
-credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cdb = pyrax.cloud_databases
-
-# Instance Flavor (512MB RAM)
-InstanceFlavor = 1
-
-# Volume Size (1 GB)
-VolumeSize = 1
-
-def CreateADatabase(InstanceName, DBName, DBUserName):
+def CreateADatabase(cdb, InstanceName, DBName, DBUserName):
   """Create a new CloudDatabase instance, Schema and User
   (with randomly generated password)
 
@@ -54,6 +44,16 @@ def CreateADatabase(InstanceName, DBName, DBUserName):
 
 if __name__ == "__main__":
 
+  credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cdb = pyrax.cloud_databases
+  
+  # Instance Flavor (512MB RAM)
+  InstanceFlavor = 1
+  
+  # Volume Size (1 GB)
+  VolumeSize = 1
+
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     InstanceName = sys.argv[1]
     DBName = sys.argv[2]
     DBUserName = sys.argv[3]
-    CreateADatabase(InstanceName, DBName, DBUserName)
+    CreateADatabase(cdb, InstanceName, DBName, DBUserName)
   else:
     print "Wrong number of parameters specified!"
     print "Usage:  challenge5 <DBInstanceName> <SchemaName> <UserName>"

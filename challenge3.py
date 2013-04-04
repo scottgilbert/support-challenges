@@ -12,11 +12,8 @@
 import sys, os, time
 import pyrax
 
-credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-pyrax.set_credential_file(credential_file)
-cf = pyrax.cloudfiles
 
-def UploadDirToContainer(ULdirectory, ULContainer):
+def UploadDirToContainer(cf, ULdirectory, ULContainer):
   """ Upload contents of a local directory to a CloudFiles Container
 
   If the specified CloudFiles container does not already exist, then it
@@ -46,6 +43,10 @@ def UploadDirToContainer(ULdirectory, ULContainer):
 
 if __name__ == "__main__":
 
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  cf = pyrax.cloudfiles
+
   if len(sys.argv) == 3:
     ULDir = os.path.expanduser(sys.argv[1])
     ULContainer = sys.argv[2]
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     # for "read permissions" before calling pyrax
     if os.access(ULDir, os.R_OK):
       try:
-        UploadDirToContainer(ULDir, ULContainer)
+        UploadDirToContainer(cf, ULDir, ULContainer)
       except pyrax.exceptions.FolderNotFound: 
         print 'The specified directory "%s" does not exist' % ULDir
     else:
