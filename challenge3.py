@@ -9,7 +9,7 @@
 #  source directory containing files to be uploaded
 #  destination cloudfiles container
 
-import sys, os, time
+import sys, os, time, argparse
 import pyrax
 
 
@@ -44,30 +44,34 @@ def UploadDirToContainer(cf, ULdirectory, ULContainer):
   print "Done!"
 
 if __name__ == "__main__":
-  print "Challenge3 - Write a script that accepts a directory as an argument"
+  print "\nChallenge3 - Write a script that accepts a directory as an argument"
   print "as well as a container name. The script should upload the contents"
   print "of the specified directory to the container (or create it if it"
   print "doesn't exist). The script should handle errors appropriately."
   print "(Check for invalid paths, etc.)\n\n" 
 
+  parser = argparse.ArgumentParser()
+  parser.add_argument("Directory", 
+                      help="Directory containing files to upload to CONTAINER")
+  parser.add_argument("Container", 
+                      help="CloudFiles container")
+  args = parser.parse_args()
+
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cf = pyrax.cloudfiles
 
-  if len(sys.argv) == 3:
-    ULDir = os.path.expanduser(sys.argv[1])
-    ULContainer = sys.argv[2]
-    # pyrax silently ignores 'no premissions to read dir' errors, so we check
-    # for "read permissions" before calling pyrax
-    if os.access(ULDir, os.R_OK):
-      try:
-        UploadDirToContainer(cf, ULDir, ULContainer)
-      except pyrax.exceptions.FolderNotFound: 
-        print 'The specified directory "%s" does not exist' % ULDir
-    else:
-      print 'ERROR!\nYou do not have read access to directory "%s"' % ULDir
+  ULDir = os.path.expanduser(args.Directory)
+  ULContainer = args.Container
+
+  # pyrax silently ignores 'no premissions to read dir' errors, so we check
+  # for "read permissions" before calling pyrax
+  if os.access(ULDir, os.R_OK):
+    try:
+      UploadDirToContainer(cf, ULDir, ULContainer)
+    except pyrax.exceptions.FolderNotFound: 
+      print 'The specified directory "%s" does not exist' % ULDir
   else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge3 <directory> <CloudFiles Container>"
+    print 'ERROR!\nYou do not have read access to directory "%s"' % ULDir
 
 # vim: ts=2 sw=2 tw=78 expandtab

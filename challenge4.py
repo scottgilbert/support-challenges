@@ -10,7 +10,7 @@
 # Adds an "A record" if an IPv4 address is supplied, or a "AAAA record" if 
 # an IPv6 address is supplied.
 
-import sys, os, socket
+import sys, os, socket, argparse
 import pyrax
 
 def createDNSRecord(dns, FQDN, IPAddr, RcdType):
@@ -83,26 +83,24 @@ def is_valid_ipv6_address(address):
   return True
 
 if __name__ == "__main__":
-  print "Challenge4 - Write a script that uses Cloud DNS to create a new A"
+  print "\nChallenge4 - Write a script that uses Cloud DNS to create a new A"
   print "record when passed a FQDN and IP address as arguments.\n\n"
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("FQDN",  help="Fully Qualified Domain Name")
+  parser.add_argument("IP", help="IP address (IPv4 or IPv6)")
+  args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   dns = pyrax.cloud_dns
 
-  if len(sys.argv) == 3:
-    FQDN = sys.argv[1]
-    IPAddr = sys.argv[2]
-
-    if is_valid_ipv4_address(IPAddr):
-      createDNSRecord(dns, FQDN, IPAddr, 'A')
-    elif is_valid_ipv6_address(IPAddr):
-      createDNSRecord(dns, FQDN, IPAddr, 'AAAA')
-    else:
-      print 'The specified IP address "%s" is not valid' % IPAddr
-
+  if is_valid_ipv4_address(args.IP):
+    createDNSRecord(dns, args.FQDN, args.IP, 'A')
+  elif is_valid_ipv6_address(args.IP):
+    createDNSRecord(dns, args.FQDN, args.IP, 'AAAA')
   else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge4 <FQDN> <IPv4 or IPv6 Address>"
+    print 'The specified IP address "%s" is not valid' % IPAddr
+    sys.exit(2)
 
 # vim: ts=2 sw=2 tw=78 expandtab

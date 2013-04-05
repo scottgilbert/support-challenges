@@ -3,7 +3,7 @@
 # nodes to a new Cloud Load Balancer. 
 # Author: Scott Gilbert
 
-import os, sys, time
+import os, sys, time, argparse
 import pyrax
 import challenge1 as c1
 
@@ -29,28 +29,30 @@ def CreateLBandAddServers(clb, LBName, servers):
   print " port: %s" % lb.port
   print " Nodes:"
   for n in lb.nodes:
-    print "   addr: %s  port: %s  status: %s" % (n.address, n.port, n.condition)
+    print "   addr: %s  port: %s  status: %s" % (n.address, n.port, 
+                                                 n.condition)
   print "\n"
 
   return lb
 
 if __name__ == "__main__":
-  print "Challenge7 - Write a script that will create 2 Cloud Servers and"
+  print "\nChallenge7 - Write a script that will create 2 Cloud Servers and"
   print "add them as nodes to a new Cloud Load Balancer.\n\n"
- 
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--flavor", default=2, 
+                          help="Flavor of servers to create")
+  parser.add_argument("--image", help="Image from which to creat servers", 
+                            default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
+  parser.add_argument("--basename", default='web', 
+                              help="Base name to assign to new servers")
+  parser.add_argument("--numservers", default=2, type=int,
+                               help="Number of servers to create")
+  parser.add_argument("--lbname", default='LB-Challenge7',
+                               help="Name for created Cloud Loadbalancer")
+  args = parser.parse_args()
+             
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-  
-  # flavor = 512MB
-  flavor = 2 
-  # image = CentOS 6.3 
-  image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
-  # Base name to user for new servers
-  serverBaseName = 'web'
-  # Number of servers to build
-  numServers = 2
-  # Name of the new LB instance
-  LBName = 'LB-Challenge7'
-  
   pyrax.set_credential_file(credential_file)
   cs = pyrax.cloudservers
   clb = pyrax.cloud_loadbalancers
@@ -58,10 +60,11 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = c1.BuildSomeServers(cs, flavor, image, serverBaseName, numServers)
+  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.basename,
+                                args.numservers)
   c1.waitForServerNetworks(servers)
   c1.printServersInfo(servers)
 
-  lb = CreateLBandAddServers(clb, LBName, servers)
+  lb = CreateLBandAddServers(clb, args.lbname, servers)
 
 # vim: ts=2 sw=2 tw=78 expandtab

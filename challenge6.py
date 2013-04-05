@@ -7,12 +7,11 @@
 #  Cloudfiles container name to be created
 #
 
-import sys, os, time
+import sys, os, time, argparse
 import pyrax
 
 def createCDNContainer(cf, newContainerName):
   """Create a new CloudFiles Container and enable public CDN access
-
   If the specified container already exists, abort with error message.
   """
 
@@ -37,18 +36,18 @@ def createCDNContainer(cf, newContainerName):
     print "Done!"
 
 if __name__ == "__main__":
-  print "Challenge6 - Write a script that creates a CDN-enabled container in"
+  print "\nChallenge6 - Write a script that creates a CDN-enabled container in"
   print "Cloud Files.\n\n"
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("container", 
+                      help="Name of CloudFiles container to create")
+  args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cf = pyrax.cloudfiles
 
-  if len(sys.argv) == 2:
-    newContainerName = sys.argv[1]
-    createCDNContainer(cf, newContainerName)
-  else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge6 <New Container Name> "
+  createCDNContainer(cf, args.container)
 
 # vim: ts=2 sw=2 tw=78 expandtab

@@ -14,7 +14,7 @@
 #  file containing public ssh key
 #  file containing error page content (html)
 
-import sys, os, time
+import sys, os, time, argparse
 import pyrax
 import challenge1 as c1
 import challenge4 as c4
@@ -50,17 +50,35 @@ def waitForLBBuild(lb):
     time.sleep(2)
     print '.', 
     lb.get()
+  print "Done!"
 
 
 if __name__ == "__main__":
-  print "Challenge10 - Write an application that will:"
+  print "\nChallenge10 - Write an application that will:"
   print " - Create 2 servers, supplying a ssh key to be installed at",
-  print " /root/.ssh/authorized_keys."
+  print "/root/.ssh/authorized_keys."
   print " - Create a load balancer"
   print " - Add the 2 new servers to the LB"
   print " - Set up LB monitor and custom error page."
   print " - Create a DNS record based on a FQDN for the LB VIP." 
   print " - Write the error page html to a file in cloud files for backup.\n\n"
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("FQDN", help="FQDN for the new website")
+  parser.add_argument("sshkeyfile", help="File containing public ssh-key")
+  parser.add_argument("errorpage", help="File containing error page html")
+  parser.add_argument("--image", help="Image from which to create servers", 
+                      default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
+  parser.add_argument("--flavor", default=2, 
+                      help="Flavor of servers to create")
+  parser.add_argument("--numservers", default=2, type=int,
+                      help="Number of servers to create")
+  parser.add_argument("--lbname", default=False,
+                      help="Name of Loadbalancer to create")
+  parser.add_argument("--container", default=False,
+                      help="Cloudfiles container to copy error page file to")
+
+  args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
@@ -72,59 +90,49 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  # flavor = 512MB
-  flavor = 2 
-  # image = CentOS 6.3
-  image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
-  # Number of servers to build
-  numServers = 2
+  sshkeyFile = os.path.expanduser(args.sshkeyfile)
+  errorPageFile = os.path.expanduser(args.errorpage)
+  if not c9.isValidHostname(args.FQDN):
+    print "The specified FQDN is not valid: %s" % args.FQDN
+    sys.exit(2)
+  if not os.path.isfile(sshkeyFile):
+    print "The ssh key file does not exist: %s" % sshKeyFile
+    sys.exit(3)
+  if not os.path.isfile(errorPageFile):
+    print "The Error Page file does not exist: %s" % errorPageFile
+    sys.exit(4)
 
-  if len(sys.argv) == 4:
-    fqdn = sys.argv[1]
-    sshkeyFile = os.path.expanduser(sys.argv[2])
-    errorPageFile = os.path.expanduser(sys.argv[3])
-    if not c9.isValidHostname(fqdn):
-      print "The specified FQDN is not valid: %s" % fqdn
-      sys.exit(2)
-    if not os.path.isfile(sshkeyFile):
-      print "The ssh key file does not exist: %s" % sshKeyFile
-      sys.exit(3)
-    if not os.path.isfile(errorPageFile):
-      print "The Error Page file does not exist: %s" % errorPageFile
-      sys.exit(4)
-
-    # Create Servers
-    sshkey = open(sshkeyFile, 'r').read()
-    authkeyFile = '/root/.ssh/authorized_keys'
-    serverFiles = {authkeyFile: sshkey}
-    servers = c1.BuildSomeServers(cs, flavor, image, fqdn, numServers, serverFiles)
-    c1.waitForServerNetworks(servers)
-    c1.printServersInfo(servers)
-    # Create Loadbalancer
-    LBName = 'LB' + fqdn
-    print "Creating Loadbalancer %s" % LBName
-    lb = c7.CreateLBandAddServers(clb, LBName, servers)
-    waitForLBBuild(lb)
-    # create DNS entries for the LB
-    c4.createDNSRecord(dns, fqdn, lb.virtual_ips[0].address, 'A')
-    # add LB monitor
-    lb.add_health_monitor(type="CONNECT", delay=5, timeout=2,
-            attemptsBeforeDeactivation=1)
-    waitForLBBuild(lb)
-    # add LB error page
-    errorPage = open(errorPageFile, 'r').read()
-    lb.set_error_page(errorPage)
-    # Upload error page to cloudfiles (container?)
-    contName = pyrax.utils.random_name(12, ascii_only=True)
-    cont = cf.create_container(contName)
-    print "New Container:", cont.name
-    cf.store_object(cont, os.path.basename(errorPageFile), errorPage)
-    print "Error page stored in CloudFiles container %s" % contName
-
+  # Create Servers
+  sshkey = open(sshkeyFile, 'r').read()
+  authkeyFile = '/root/.ssh/authorized_keys'
+  serverFiles = {authkeyFile: sshkey}
+  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.FQDN,
+                                args.numservers, serverFiles)
+  c1.waitForServerNetworks(servers)
+  c1.printServersInfo(servers)
+  # Create Loadbalancer
+  if not args.lbname:
+    LBName = 'LB' + args.FQDN
   else:
-    print "Wrong number of parameters specified!\n"
-    print "Usage:  challenge10 <FQDN> <file containing public ssh key>",
-    print "<file containing error page content>\n"
-    sys.exit(1)
+    LBName = args.lbname
+  print "Creating Loadbalancer %s" % LBName
+  lb = c7.CreateLBandAddServers(clb, LBName, servers)
+  waitForLBBuild(lb)
+  # create DNS entries for the LB
+  c4.createDNSRecord(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
+  # add LB monitor
+  print "Adding Loadbalancer monitor"
+  lb.add_health_monitor(type="CONNECT", delay=5, timeout=2,
+          attemptsBeforeDeactivation=1)
+  waitForLBBuild(lb)
+  # add LB error page
+  errorPage = open(errorPageFile, 'r').read()
+  lb.set_error_page(errorPage)
+  # Upload error page to cloudfiles (container?)
+  if not args.container:
+    args.container = pyrax.utils.random_name(12, ascii_only=True)
+  cont = cf.create_container(args.container)
+  cf.store_object(cont, os.path.basename(errorPageFile), errorPage)
+  print "Error page stored in CloudFiles container %s" % cont.name
 
 # vim: ts=2 sw=2 tw=78 expandtab

@@ -4,10 +4,11 @@
 # the IP and login credentials for each server. Use any image you want.
 # Author: Scott Gilbert
 
-import os, sys, time
+import os, sys, time, argparse
 import pyrax
 
-def BuildSomeServers(cs, flavor, image, serverBaseName, numServers, insertFiles={}):
+def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
+                     insertFiles={}):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
   counter, starting with 1 and ending with numServers - unless number of 
@@ -66,30 +67,31 @@ def printServersInfo(servers):
   print "\n"
 
 if __name__ == "__main__":
-  print "Challenge1 - Write a script that builds three 512 MB Cloud Servers"
+  print "\nChallenge1 - Write a script that builds three 512 MB Cloud Servers"
   print "that following a similar naming convention. (ie., web1, web2, web3)"
   print "and returns the IP and login credentials for each server. Use any"
   print "image you want.\n\n"
+  
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--flavor", default=2, 
+                      help="Flavor of servers to create")
+  parser.add_argument("--image", help="Image from which to create servers", 
+                      default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
+  parser.add_argument("--basename", default='web', 
+                      help="Base name to assign to new servers")
+  parser.add_argument("--numservers", default=3, type=int,
+                      help="Number of servers to create")
+  args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-  
-  # flavor = 512MB
-  flavor = 2 
-  # image = CentOS 6.3
-  image = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'
-  # Base name to user for new servers
-  serverBaseName = 'web'
-  # Number of servers to build
-  numServers = 3
-  
   pyrax.set_credential_file(credential_file)
   cs = pyrax.cloudservers
-
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = BuildSomeServers(cs, flavor, image, serverBaseName, numServers)
+  servers = BuildSomeServers(cs, args.flavor, args.image, args.basename,
+                            args.numservers)
   waitForServerNetworks(servers)
   printServersInfo(servers)
 

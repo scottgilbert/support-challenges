@@ -5,12 +5,12 @@
 # Author: Scott Gilbert
 
 
-# Requires the following two parameters:
+# Requires the following three parameters:
 #  DB Instance Name
 #  DB Schema Name
 #  DB User Name
 
-import sys, os, time
+import sys, os, time, argparse
 import pyrax
 
 def CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, 
@@ -47,31 +47,29 @@ def CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize,
   print "Password: %s" % userPassword
 
 if __name__ == "__main__":
-  print "Challenge5 - Write a script that creates a Cloud Database instance."
+  print "\nChallenge5 - Write a script that creates a Cloud Database instance."
   print "This instance should contain at least one database, and the database"
   print "should have at least one user that can connect to it.\n\n"
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("Instance", 
+                      help="Name of CloudDatabase Instance to create")
+  parser.add_argument("Schema", help="Name of database schema to create") 
+  parser.add_argument("User", help="Username for database access")
+  parser.add_argument("--flavor", default=1, 
+                        help="Flavor of CloudDatabase to create")
+  parser.add_argument("--volumesize", default=1, type=int,
+                        help="Size of database volume (GB)")
+  args = parser.parse_args()
 
   credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
   cdb = pyrax.cloud_databases
   
-  # Instance Flavor (512MB RAM)
-  InstanceFlavor = 1
-  
-  # Volume Size (1 GB)
-  VolumeSize = 1
-
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  if len(sys.argv) == 4:
-    InstanceName = sys.argv[1]
-    DBName = sys.argv[2]
-    DBUserName = sys.argv[3]
-    CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, DBName, 
-                    DBUserName)
-  else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge5 <DBInstanceName> <SchemaName> <UserName>"
+  CreateADatabase(cdb, args.Instance, args.flavor, args.volumesize, 
+                  args.Schema, args.User)
 
 # vim: ts=2 sw=2 tw=78 expandtab
