@@ -5,7 +5,7 @@
 
 # Requires a single parameter of the uuid of the server to be cloned.
 
-import sys, os, time, datetime
+import sys, os, time, datetime, argparse
 import pyrax
 import challenge1 as c1
 
@@ -56,15 +56,22 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  if len(sys.argv) == 2:
-    newserver = cloneIt(cs, sys.argv[1]);
-    # Wait for network info to become available
-    c1.waitForServerNetworks([newserver])
-    # Print info for new server
-    c1.printServersInfo([newserver])
+  parser = argparse.ArgumentParser()
+  parser.add_argument("SourceServer", help="UUID of the server to clone")
+  args = parser.parse_args()
 
-  else:
-    print "Wrong number of parameters specified!"
-    print "Usage:  challenge2 <server uuid>"
+  try:
+    cs.servers.find(id=args.SourceServer)
+  except:
+    print "The source server UUID you specified was not found: %s" % (
+             args.SourceServer)
+    print "Aborting...."
+    sys.exit(2)
+
+  newserver = cloneIt(cs, args.SourceServer);
+  # Wait for network info to become available
+  c1.waitForServerNetworks([newserver])
+  # Print info for new server
+  c1.printServersInfo([newserver])
 
 # vim: ts=2 sw=2 tw=78 expandtab
