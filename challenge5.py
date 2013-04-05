@@ -13,7 +13,8 @@
 import sys, os, time
 import pyrax
 
-def CreateADatabase(cdb, InstanceName, DBName, DBUserName):
+def CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, 
+	                  DBName, DBUserName):
   """Create a new CloudDatabase instance, Schema and User
   (with randomly generated password)
 
@@ -67,7 +68,8 @@ if __name__ == "__main__":
     InstanceName = sys.argv[1]
     DBName = sys.argv[2]
     DBUserName = sys.argv[3]
-    CreateADatabase(cdb, InstanceName, DBName, DBUserName)
+    CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, DBName, 
+                    DBUserName)
   else:
     print "Wrong number of parameters specified!"
     print "Usage:  challenge5 <DBInstanceName> <SchemaName> <UserName>"
