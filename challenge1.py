@@ -7,6 +7,13 @@
 import os, sys, time, argparse
 import pyrax
 
+def isValidRegion(region):
+  """ Check validity of a region """
+  if region in ['DFW','ORD']:
+    return True
+  else:
+    return False
+
 def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
                      insertFiles={}):
   """ Request build of CloudServers of specified flavor and image.
@@ -58,6 +65,7 @@ def printServersInfo(servers):
   for srv in servers:
     print "\n\nServer Name: %s" % srv.name
     print "Status: %s" % srv.status
+    #print "Region: %s" % srv.region
     print "Root Password: %s" % srv.adminPass
     print "Public IPs:", 
     for ip in srv.networks['public']: print '%s  ' % ip,
@@ -81,11 +89,17 @@ if __name__ == "__main__":
                       help="Base name to assign to new servers")
   parser.add_argument("--numservers", default=3, type=int,
                       help="Number of servers to create")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create servers (DFW or ORD)")
   args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cs = pyrax.cloudservers
+  if isValidRegion(args.region):
+    cs = pyrax.connect_to_cloudservers(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)

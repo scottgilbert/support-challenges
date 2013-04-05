@@ -15,7 +15,7 @@
 import sys, os, time, argparse
 import pyrax
 import challenge4 as c4
-
+import challenge1 as c1
 
 def makeAWebsite(cf, dns, siteName, contName, indexFileContents, 
                  indexFileName):
@@ -61,13 +61,19 @@ if __name__ == "__main__":
   parser.add_argument("--container", 
                       help="CloudFiles container name to create",
                       default=False)
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create site (DFW or ORD)")
   args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cf = pyrax.cloudfiles
-  dns = pyrax.cloud_dns
-  
+  if c1.isValidRegion(args.region):
+    cf = pyrax.connect_to_cloudfiles(region=args.region)
+    dns = pyrax.connect_to_cloud_dns(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
+
   if args.htmlfile:
     indexFileName = os.path.expanduser(args.htmlfile)
     if os.path.isfile(indexFileName):

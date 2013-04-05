@@ -41,21 +41,28 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--flavor", default=2, 
-                          help="Flavor of servers to create")
+                      help="Flavor of servers to create")
   parser.add_argument("--image", help="Image from which to creat servers", 
-                            default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
+                      default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
   parser.add_argument("--basename", default='web', 
-                              help="Base name to assign to new servers")
+                      help="Base name to assign to new servers")
   parser.add_argument("--numservers", default=2, type=int,
-                               help="Number of servers to create")
+                      help="Number of servers to create")
   parser.add_argument("--lbname", default='LB-Challenge7',
-                               help="Name for created Cloud Loadbalancer")
+                      help="Name for created Cloud Loadbalancer")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create devices (DFW or ORD)")
+
   args = parser.parse_args()
              
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cs = pyrax.cloudservers
-  clb = pyrax.cloud_loadbalancers
+  if c1.isValidRegion(args.region):
+    cs = pyrax.connect_to_cloudservers(region=args.region)
+    clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)

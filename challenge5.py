@@ -12,6 +12,7 @@
 
 import sys, os, time, argparse
 import pyrax
+import challenge1 as c1
 
 def CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, 
 	                  DBName, DBUserName):
@@ -57,15 +58,21 @@ if __name__ == "__main__":
   parser.add_argument("Schema", help="Name of database schema to create") 
   parser.add_argument("User", help="Username for database access")
   parser.add_argument("--flavor", default=1, 
-                        help="Flavor of CloudDatabase to create")
+                      help="Flavor of CloudDatabase to create")
   parser.add_argument("--volumesize", default=1, type=int,
-                        help="Size of database volume (GB)")
+                      help="Size of database volume (GB)")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create database (DFW or ORD)")
   args = parser.parse_args()
 
   credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cdb = pyrax.cloud_databases
-  
+  if c1.isValidRegion(args.region):
+    cdb = pyrax.connect_to_cloud_databases(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
+
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 

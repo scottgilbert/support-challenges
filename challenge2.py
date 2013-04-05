@@ -49,22 +49,29 @@ if __name__ == "__main__":
   print "Challenge2 - Write a script that clones a server (takes an image and"
   print "deploys the image as a new server).\n\n" 
 
-  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-  pyrax.set_credential_file(credential_file)
-  cs = pyrax.cloudservers
-
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   parser = argparse.ArgumentParser()
   parser.add_argument("SourceServer", help="UUID of the server to clone")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create servers (DFW or ORD)")
   args = parser.parse_args()
+
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+  if c1.isValidRegion(args.region):
+    cs = pyrax.connect_to_cloudservers(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   try:
     cs.servers.find(id=args.SourceServer)
   except:
-    print "The source server UUID you specified was not found: %s" % (
-             args.SourceServer)
+    print "The source server UUID you specified was not found"
+    print "in region %s : %s" % (args.region, args.SourceServer)
+    print "Perhaps it is in a different region?"
     print "Aborting...."
     sys.exit(2)
 

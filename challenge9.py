@@ -80,13 +80,18 @@ if __name__ == "__main__":
                       default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
   parser.add_argument("--flavor", default=2, 
                       help="Flavor of servers to create")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create server (DFW or ORD)")
   args = parser.parse_args()
-
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cs = pyrax.cloudservers
-  dns = pyrax.cloud_dns
+  if c1.isValidRegion(args.region):
+    cs = pyrax.connect_to_cloudservers(region=args.region)
+    dns = pyrax.connect_to_cloud_dns(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)

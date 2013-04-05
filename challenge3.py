@@ -11,6 +11,7 @@
 
 import sys, os, time, argparse
 import pyrax
+import challenge1 as c1
 
 
 def UploadDirToContainer(cf, ULdirectory, ULContainer):
@@ -55,11 +56,18 @@ if __name__ == "__main__":
                       help="Directory containing files to upload to CONTAINER")
   parser.add_argument("Container", 
                       help="CloudFiles container")
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create container (DFW or ORD)")
+
   args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cf = pyrax.cloudfiles
+  if c1.isValidRegion(args.region):
+    cf = pyrax.connect_to_cloudfiles(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   ULDir = os.path.expanduser(args.Directory)
   ULContainer = args.Container

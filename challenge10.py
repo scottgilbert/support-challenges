@@ -77,15 +77,20 @@ if __name__ == "__main__":
                       help="Name of Loadbalancer to create")
   parser.add_argument("--container", default=False,
                       help="Cloudfiles container to copy error page file to")
-
+  parser.add_argument("--region", default='DFW',
+                      help="Region in which to create devices (DFW or ORD)")
   args = parser.parse_args()
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  cs = pyrax.cloudservers
-  dns = pyrax.cloud_dns
-  clb = pyrax.cloud_loadbalancers
-  cf = pyrax.cloudfiles
+  if c1.isValidRegion(args.region):
+    cs = pyrax.connect_to_cloudservers(region=args.region)
+    dns = pyrax.connect_to_cloud_dns(region=args.region)
+    clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
+    cf = pyrax.connect_to_cloudfiles(region=args.region)
+  else:
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -133,6 +138,6 @@ if __name__ == "__main__":
     args.container = pyrax.utils.random_name(12, ascii_only=True)
   cont = cf.create_container(args.container)
   cf.store_object(cont, os.path.basename(errorPageFile), errorPage)
-  print "Error page stored in CloudFiles container %s" % cont.name
+  print "Loadbalancer error page stored in CloudFiles container %s" % cont.name
 
 # vim: ts=2 sw=2 tw=78 expandtab
