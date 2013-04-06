@@ -80,12 +80,11 @@ def printServersInfo(servers):
     print "Status: %s" % srv.status
     #print "Region: %s" % srv.region
     print "Root Password: %s" % srv.adminPass
-    print "Public IPs:", 
-    for ip in srv.networks['public']: print '%s  ' % ip,
-    print "\nPrivate IP:", 
-    for ip in srv.networks['private']: print '%s  ' % ip,
-  
-  print "\n"
+    for net in srv.networks:
+      print "%s IPs:" % net,
+      for ip in srv.networks[net]:
+        print ip,
+      print "\n"
 
 if __name__ == "__main__":
   print "\nChallenge1 - Write a script that builds three 512 MB Cloud Servers"
