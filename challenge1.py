@@ -27,7 +27,7 @@ def isValidRegion(region):
     return False
 
 def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
-                     insertFiles={}):
+                     insertFiles={}, nets={}):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
   counter, starting with 1 and ending with numServers - unless number of 
@@ -44,12 +44,13 @@ def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
   if numServers == 1:
     print "Requesting build for server %s" % serverBaseName
     servers.append(cs.servers.create(serverBaseName, image, flavor,
-                    files=insertFiles))
+                    files=insertFiles, networks=nets))
   else:
     for server_num in xrange(1, numServers + 1):
       print "Requesting build for server %s%d" % (serverBaseName, server_num)
       servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
-                                      image, flavor, files=insertFiles))
+                                      image, flavor, files=insertFiles,
+                                      networks=nets))
   return servers
 
 def waitForServerNetworks(servers):  
