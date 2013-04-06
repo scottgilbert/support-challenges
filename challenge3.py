@@ -5,9 +5,15 @@
 # should handle errors appropriately. (Check for invalid paths, etc.)  
 # Author: Scott Gilbert
 
+# Required Parameters:
+#  SourceDir  source directory containing files to be uploaded
+#  Container  destination cloudfiles container
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --region REGION           Region in which to create container (DFW or ORD)
+
 # Requires the following two parameters:
-#  source directory containing files to be uploaded
-#  destination cloudfiles container
 
 import sys, os, time, argparse
 import pyrax

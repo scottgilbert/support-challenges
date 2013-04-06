@@ -6,11 +6,14 @@
 # container. 
 # Author: Scott Gilbert
 
-# Requires the following parameter:
-#  DNS name to create CNAME for (ie: 'www.example.com')
+# Required Parameters:
+#   FQDN                      FQDN for the new website
 #
-# Optional second parameter:
-#  filename of "index" file to upload.  If not specified a default is created.
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --htmlfile                Local file containing new site's content
+#   --container               CloudFiles container name to create
+#   --region                  Region in which to create site (DFW or ORD)
 
 import sys, os, time, argparse
 import pyrax

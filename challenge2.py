@@ -3,7 +3,13 @@
 # the image as a new server). 
 # Author: Scott Gilbert
 
-# Requires a single parameter of the uuid of the server to be cloned.
+# Required Parameters:
+#  UUID of server to be cloned
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --region REGION           Region in which to create server (DFW or ORD)
+
 
 import sys, os, time, datetime, argparse
 import pyrax

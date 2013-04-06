@@ -5,10 +5,14 @@
 # the server's public IP.
 # Author: Scott Gilbert
 
-# Requires the following parameters:
-#  FQDN
-#  image uuid
-#  flavor
+# Required Parameters:
+#   FQDN                      FQDN for the new CloudServer
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --flavor FLAVOR           Flavor of server to create
+#   --image IMAGE             Image from which to create server
+#   --region REGION           Region in which to create servers (DFW or ORD)
 
 import sys, os, re, argparse
 import pyrax
@@ -76,10 +80,10 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument("FQDN", help="FQDN for the new CloudServer")
-  parser.add_argument("--image", help="Image from which to create servers", 
+  parser.add_argument("--image", help="Image from which to create server", 
                       default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
   parser.add_argument("--flavor", default=2, 
-                      help="Flavor of servers to create")
+                      help="Flavor of server to create")
   parser.add_argument("--region", default='DFW',
                       help="Region in which to create server (DFW or ORD)")
   args = parser.parse_args()

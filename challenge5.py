@@ -4,11 +4,17 @@
 # at least one user that can connect to it.
 # Author: Scott Gilbert
 
+# Required Parameters:
+#   Instance                  Name of CloudDatabase Instance to create
+#   Schema                    Name of database schema to create
+#   User                      Username for database access
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --flavor FLAVOR           Flavor of database instance to create
+#   --volumesize VOLUMESIZE   Size of database volume (GB)
+#   --region REGION           Region in which to create database (DFW or ORD)
 
-# Requires the following three parameters:
-#  DB Instance Name
-#  DB Schema Name
-#  DB User Name
 
 import sys, os, time, argparse
 import pyrax

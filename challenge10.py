@@ -9,10 +9,19 @@
 #  - Write the error page html to a file in cloud files for backup.
 # Author: Scott Gilbert
 
-# Requires the following parameters:
-#  FQDN
-#  file containing public ssh key
-#  file containing error page content (html)
+# Required Parameters:
+#  FQDN                       FQDN for the new website
+#  sshkeyfile                 file containing public ssh-key
+#  errorpage                  file containing error page content (html)
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --image IMAGE             Image from which to create servers
+#   --flavor FLAVOR           Flavor of servers to create
+#   --numservers NUMSERVERS   Number of servers to create
+#   --lbname LBNAME           Name of Loadbalancer to create
+#   --container CONTAINER     Cloudfiles container to copy error page file to
+#   --region REGION           Region in which to create devices (DFW or ORD)
 
 import sys, os, time, argparse
 import pyrax

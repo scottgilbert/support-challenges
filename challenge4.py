@@ -3,12 +3,17 @@
 # when passed a FQDN and IP address as arguments.
 # Author: Scott Gilbert
 
-# Requires the following two parameters:
+# Adds an "A record" if an IPv4 address is supplied, or a "AAAA record" if 
+# an IPv6 address is supplied.
+#
+# Required Parameters:
 #  FQDN
 #  IP (either IPv4 or IPv6)
 #
-# Adds an "A record" if an IPv4 address is supplied, or a "AAAA record" if 
-# an IPv6 address is supplied.
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --region REGION           Region (DFW or ORD)
+
 
 import sys, os, socket, argparse
 import pyrax

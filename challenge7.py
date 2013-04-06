@@ -3,6 +3,18 @@
 # nodes to a new Cloud Load Balancer. 
 # Author: Scott Gilbert
 
+# Required Parameters:
+#  none
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --flavor FLAVOR           Flavor of servers to create
+#   --image IMAGE             Image from which to create servers
+#   --basename BASENAME       Base name to assign to new servers
+#   --numservers NUMSERVERS   Number of servers to create
+#   --region REGION           Region in which to create servers (DFW or ORD)
+#   --lbname                  Name for created Cloud Loadbalancer 
+
 import os, sys, time, argparse
 import pyrax
 import challenge1 as c1

@@ -3,9 +3,13 @@
 # Files.
 # Author: Scott Gilbert
 
-# Requires one parameter:
-#  Cloudfiles container name to be created
+# Required Parameters:
+#   container                 Name of CloudFiles container to create
 #
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --region REGION           Region in which to create container (DFW or ORD)
+
 
 import sys, os, time, argparse
 import pyrax

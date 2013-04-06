@@ -4,6 +4,18 @@
 # the IP and login credentials for each server. Use any image you want.
 # Author: Scott Gilbert
 
+# Required Parameters:
+#  none
+#
+# Optional Parameters:
+#   -h, --help                show help message and exit
+#   --flavor FLAVOR           Flavor of servers to create
+#   --image IMAGE             Image from which to create servers
+#   --basename BASENAME       Base name to assign to new servers
+#   --numservers NUMSERVERS   Number of servers to create
+#   --region REGION           Region in which to create servers (DFW or ORD)
+
+
 import os, sys, time, argparse
 import pyrax
 
