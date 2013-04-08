@@ -44,13 +44,13 @@ def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
   if numServers == 1:
     print "Requesting build for server %s" % serverBaseName
     servers.append(cs.servers.create(serverBaseName, image, flavor,
-                    files=insertFiles, networks=nets))
+                    files=insertFiles, nics=nets))
   else:
     for server_num in xrange(1, numServers + 1):
       print "Requesting build for server %s%d" % (serverBaseName, server_num)
       servers.append(cs.servers.create("%s%d" % (serverBaseName, server_num), 
                                       image, flavor, files=insertFiles,
-                                      networks=nets))
+                                      nics=nets))
   return servers
 
 def waitForServerNetworks(servers):  
@@ -84,7 +84,8 @@ def printServersInfo(servers):
       print "%s IPs:" % net,
       for ip in srv.networks[net]:
         print ip,
-      print "\n"
+      print 
+    print 
 
 if __name__ == "__main__":
   print "\nChallenge1 - Write a script that builds three 512 MB Cloud Servers"
