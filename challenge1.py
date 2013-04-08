@@ -69,6 +69,23 @@ def waitForServerNetworks(servers):
       if srv.networks == {} and srv.status <> 'ERROR':  
         networks_assigned = False
         break
+
+def waitForServerBuilds(servers):
+  """Given an array of pyrax server objects, wait until all of the servers
+  builds have completed.  Print a little activity indicator to let the user
+  know that we are not stuck.
+  """
+  print "\nWaiting for all server builds to complete..."
+  allBuildsComplete = False
+  while not allBuildsComplete:
+    time.sleep(2)
+    print '.',
+    allBuildsComplete = True
+    for srv in servers:
+      srv.get()
+      if srv.status not in ['ACTIVE','ERROR']:
+        allBuildsComplete = False
+        break
   
 def printServersInfo(servers):
   """Given an array of pyrax server objects, print basic information about
