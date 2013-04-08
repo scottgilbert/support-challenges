@@ -80,8 +80,9 @@ def printServersInfo(servers):
     print "Status: %s" % srv.status
     #print "Region: %s" % srv.region
     print "Root Password: %s" % srv.adminPass
+    print "Networks:"
     for net in srv.networks:
-      print "%s IPs:" % net,
+      print "   %s IPs:" % net,
       for ip in srv.networks[net]:
         print ip,
       print 
