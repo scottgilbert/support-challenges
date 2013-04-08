@@ -34,6 +34,7 @@ import challenge1 as c1
 import challenge4 as c4
 import challenge7 as c7
 import challenge9 as c9
+import challenge10 as c10
 
 if __name__ == "__main__": 
   print "\nChallenge 11 - Write an application that will:"
@@ -62,7 +63,7 @@ if __name__ == "__main__":
                       help="Number of servers to create")
   parser.add_argument("--volumesize", default=100, type=int,
                       help="Size of CBS volume to attach to servers")
-  parser.add_argument("--networkname", default='Challenge11',
+  parser.add_argument("--networkname", default=False,
                       help="Name to give to new Cloud Network")
   parser.add_argument("--networknet", default='192.168.99.0/24',
                       help="CIDR network address to use on new network")
@@ -106,7 +107,9 @@ if __name__ == "__main__":
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
   #Create new Cloud Network
-  print "Creating new CloudNetwork named %s using %s" % (args.networkname
+  if not args.networkname: 
+    args.networkname = '%s-net' % args.FQDN
+  print "Creating new CloudNetwork named %s using %s" % (args.networkname,
                                                          args.networknet)
   network = cn.create(args.networkname, cidr=args.networknet)
   allnets = network.get_server_networks(public=True, private=True)
@@ -114,7 +117,7 @@ if __name__ == "__main__":
   #Create servers and attach to network
   servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.FQDN,
                                 args.numservers, {}, allnets)
-  c1.waitForServerNetworks(servers)
+  c1.waitForServerBuilds(servers)
   c1.printServersInfo(servers)
   #Create CBS volumes and attach to servers
   for srv in servers:
@@ -123,7 +126,7 @@ if __name__ == "__main__":
                                                            args.volumesize)
     vol = cbs.create(name=volname, size=args.volumesize, volume_type="SATA")
     print "Attaching volume %s to server %s" % (volname, srv.name)
-    vol.attach_to_instance(srv)
+    vol.attach_to_instance(srv, mountpoint='/dev/xvdd')
   #Create LB, with server nodes 
   if not args.lbname:
     LBName = 'LB' + args.FQDN
@@ -131,14 +134,15 @@ if __name__ == "__main__":
     LBName = args.lbname
   print "Creating Loadbalancer %s" % LBName
   lb = c7.CreateLBandAddServers(clb, LBName, servers)
-  waitForLBBuild(lb)
+  c10.waitForLBBuild(lb)
   #install ssl cert/key on LB
   cert = open(sslCertFile, 'r').read()
   key = open(sslKeyFile, 'r').read()
-  print "Applying SSL cert from file %s to Loadbalancer" % sslCertFile
+  print "Applying SSL cert from file %s to Loadbalancer\n" % sslCertFile
   lb.add_ssl_termination(securePort=443, enabled=True, secureTrafficOnly=False,
                          certificate=cert, privatekey=key)
   # create DNS entries for the LB
   c4.createDNSRecord(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
+  print "\nDone!\n"
 
 # vim: ts=2 sw=2 tw=78 expandtab
