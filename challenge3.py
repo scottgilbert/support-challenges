@@ -23,7 +23,7 @@ import pyrax
 import challenge1 as c1
 
 
-def UploadDirToContainer(cf, ULdirectory, ULContainer):
+def upload_dir_to_container(cf, ULdirectory, ULContainer):
   """ Upload contents of a local directory to a CloudFiles Container
 
   If the specified CloudFiles container does not already exist, then it
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cf = pyrax.connect_to_cloudfiles(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
@@ -85,7 +85,7 @@ if __name__ == "__main__":
   # for "read permissions" before calling pyrax
   if os.access(ULDir, os.R_OK):
     try:
-      UploadDirToContainer(cf, ULDir, ULContainer)
+      upload_dir_to_container(cf, ULDir, ULContainer)
     except pyrax.exceptions.FolderNotFound: 
       print 'The specified directory "%s" does not exist' % ULDir
   else:

@@ -22,7 +22,7 @@ import argparse
 import pyrax
 import challenge1 as c1
 
-def createDNSRecord(dns, FQDN, IPAddr, RcdType):
+def create_dns_record(dns, FQDN, IPAddr, RcdType):
   """ Create specified DNS record in CloudDNS
   
   First attempt to add record to zone matching specified name.
@@ -104,16 +104,16 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     dns = pyrax.connect_to_cloud_dns(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
 
   if is_valid_ipv4_address(args.IP):
-    createDNSRecord(dns, args.FQDN, args.IP, 'A')
+    create_dns_record(dns, args.FQDN, args.IP, 'A')
   elif is_valid_ipv6_address(args.IP):
-    createDNSRecord(dns, args.FQDN, args.IP, 'AAAA')
+    create_dns_record(dns, args.FQDN, args.IP, 'AAAA')
   else:
     print 'The specified IP address "%s" is not valid' % IPAddr
     sys.exit(2)

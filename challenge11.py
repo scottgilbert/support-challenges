@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
     dns = pyrax.connect_to_cloud_dns(region=args.region)
     clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     print 'The specified volume size is not valid: %s' % args.volumesize
     sys.exit(5)
 
-  if not c9.isValidHostname(args.FQDN):
+  if not c9.is_valid_hostname(args.FQDN):
     print "The specified FQDN is not valid: %s" % args.FQDN
     sys.exit(6)
 
@@ -117,10 +117,10 @@ if __name__ == "__main__":
   allnets = network.get_server_networks(public=True, private=True)
 
   #Create servers and attach to network
-  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.FQDN,
-                                args.numservers, {}, allnets)
-  c1.waitForServerBuilds(servers)
-  c1.printServersInfo(servers)
+  servers = c1.build_some_servers(cs, args.flavor, args.image, args.FQDN,
+                                  args.numservers, {}, allnets)
+  c1.wait_for_server_builds(servers)
+  c1.print_servers_info(servers)
   #Create CBS volumes and attach to servers
   for srv in servers:
     volname = "vol_%s" % srv.name
@@ -135,8 +135,8 @@ if __name__ == "__main__":
   else:
     LBName = args.lbname
   print "Creating Loadbalancer %s" % LBName
-  lb = c7.CreateLBandAddServers(clb, LBName, servers)
-  c10.waitForLBBuild(lb)
+  lb = c7.create_lb_and_add_servers(clb, LBName, servers)
+  c10.wait_for_lb_build(lb)
   #install ssl cert/key on LB
   cert = open(sslCertFile, 'r').read()
   key = open(sslKeyFile, 'r').read()
@@ -144,7 +144,7 @@ if __name__ == "__main__":
   lb.add_ssl_termination(securePort=443, enabled=True, secureTrafficOnly=False,
                          certificate=cert, privatekey=key)
   # create DNS entries for the LB
-  c4.createDNSRecord(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
+  c4.create_dns_record(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
   print "\nDone!\n"
 
 # vim: ts=2 sw=2 tw=78 expandtab

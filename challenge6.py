@@ -17,7 +17,7 @@ import argparse
 import pyrax
 import challenge1 as c1
 
-def createCDNContainer(cf, newContainerName):
+def create_cdn_container(cf, newContainerName):
   """Create a new CloudFiles Container and enable public CDN access
   If the specified container already exists, abort with error message.
   """
@@ -56,12 +56,12 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cf = pyrax.connect_to_cloudfiles(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
 
-  createCDNContainer(cf, args.container)
+  create_cdn_container(cf, args.container)
 
 # vim: ts=2 sw=2 tw=78 expandtab

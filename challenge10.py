@@ -33,7 +33,7 @@ import challenge4 as c4
 import challenge7 as c7
 import challenge9 as c9
 
-def CloudLBPublicIPv4(lb):
+def cloud_lb_public_ipv4(lb):
   """Given a pyrax CloudLoadbalancer object, return the IPv4 VIP address
   """
   for addr in  lb.virtual_ips:
@@ -42,7 +42,7 @@ def CloudLBPublicIPv4(lb):
   # if we don't find one, then return False
   return False
 
-def CloudLBPublicIPv6(lb):
+def cloud_lb_public_ipv6(lb):
   """Given a pyrax CloudLoadbalancer object, return the IPv6 VIP address
   """
   for addr in  lb.virtual_ips:
@@ -51,7 +51,7 @@ def CloudLBPublicIPv6(lb):
   # if we don't find one, then return False
   return False
 
-def waitForLBBuild(lb):  
+def wait_for_lb_build(lb):  
   """Given a pyrax loadbalancer object, wait until the loadbalancer build
      is complete.  Print a little activity indicator to let the
       user know that we are not stuck.
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
     dns = pyrax.connect_to_cloud_dns(region=args.region)
     clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
   sshkeyFile = os.path.expanduser(args.sshkeyfile)
   errorPageFile = os.path.expanduser(args.errorpage)
-  if not c9.isValidHostname(args.FQDN):
+  if not c9.is_valid_hostname(args.FQDN):
     print "The specified FQDN is not valid: %s" % args.FQDN
     sys.exit(2)
   if not os.path.isfile(sshkeyFile):
@@ -123,25 +123,25 @@ if __name__ == "__main__":
   sshkey = open(sshkeyFile, 'r').read()
   authkeyFile = '/root/.ssh/authorized_keys'
   serverFiles = {authkeyFile: sshkey}
-  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.FQDN,
-                                args.numservers, serverFiles)
-  c1.waitForServerNetworks(servers)
-  c1.printServersInfo(servers)
+  servers = c1.build_some_servers(cs, args.flavor, args.image, args.FQDN,
+                                  args.numservers, serverFiles)
+  c1.wait_for_server_networks(servers)
+  c1.print_servers_info(servers)
   # Create Loadbalancer
   if not args.lbname:
     LBName = 'LB' + args.FQDN
   else:
     LBName = args.lbname
   print "Creating Loadbalancer %s" % LBName
-  lb = c7.CreateLBandAddServers(clb, LBName, servers)
-  waitForLBBuild(lb)
+  lb = c7.create_lb_and_add_servers(clb, LBName, servers)
+  wait_for_lb_build(lb)
   # create DNS entries for the LB
-  c4.createDNSRecord(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
+  c4.create_dns_record(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
   # add LB monitor
   print "Adding Loadbalancer monitor"
   lb.add_health_monitor(type="CONNECT", delay=5, timeout=2,
           attemptsBeforeDeactivation=1)
-  waitForLBBuild(lb)
+  wait_for_lb_build(lb)
   # add LB error page
   errorPage = open(errorPageFile, 'r').read()
   lb.set_error_page(errorPage)

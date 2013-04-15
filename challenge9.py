@@ -23,7 +23,7 @@ import challenge1 as c1
 import challenge4 as c4
 
 
-def isValidImage(cs, image):
+def is_valid_image(cs, image):
   """Check the validity of a CloudServer image uuid.
   Return True if image is valid, False otherwise.
   """
@@ -33,7 +33,7 @@ def isValidImage(cs, image):
   except:
     return False
 
-def isValidFlavor(cs, flavor):
+def is_valid_flavor(cs, flavor):
   """Check the validity of a CloudServer flavor-id.
   Return True if flavor-id is valid, False otherwise.
   """
@@ -43,7 +43,7 @@ def isValidFlavor(cs, flavor):
   except:
     return False
 
-def isValidHostname(hostname):
+def is_valid_hostname(hostname):
   """Check for basic validity of a FQDN
   Return True if the FQDN is valid, False otherwise.
   """
@@ -54,7 +54,7 @@ def isValidHostname(hostname):
   allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
   return all(allowed.match(x) for x in hostname.split("."))
 
-def CloudServerPublicIPv4(server):
+def cloud_server_public_ipv4(server):
   """Given a pyrax cloudserver object, extract and return the server's primary
   public IPv4 address.
   """
@@ -64,7 +64,7 @@ def CloudServerPublicIPv4(server):
   # if we don't find one, then return False
   return False
 
-def CloudServerPublicIPv6(server):
+def cloud_server_public_ipv6(server):
   """Given a pyrax cloudserver object, extract and return the server's primary
   public IPv4 address.
   """
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
     dns = pyrax.connect_to_cloud_dns(region=args.region)
   else:
@@ -103,22 +103,22 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  if not isValidHostname(args.FQDN):
+  if not is_valid_hostname(args.FQDN):
     print "This does not appear to be a valid host name: %s" % args.FQDN
     sys.exit(2)
-  if not isValidImage(cs, args.image):
+  if not is_valid_image(cs, args.image):
     print "This does not appear to be a valid image-uuid: %s" % args.image
     sys.exit(3)
-  if not isValidFlavor(cs, args.flavor):
+  if not is_valid_flavor(cs, args.flavor):
     print "This does not appear to be a valid flavor-id: %s" % args.flavor
     sys.exit(4)
   
-  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.FQDN, 1)
-  c1.waitForServerNetworks(servers)
-  c1.printServersInfo(servers)
-  pubIPv4 = CloudServerPublicIPv4(servers[0])
-  c4.createDNSRecord(dns, args.FQDN, pubIPv4, 'A')
-  pubIPv6 = CloudServerPublicIPv6(servers[0])
-  c4.createDNSRecord(dns, args.FQDN, pubIPv6, 'AAAA')
+  servers = c1.build_some_servers(cs, args.flavor, args.image, args.FQDN, 1)
+  c1.wait_for_server_networks(servers)
+  c1.print_servers_info(servers)
+  pubIPv4 = cloud_server_public_ipv4(servers[0])
+  c4.create_dns_record(dns, args.FQDN, pubIPv4, 'A')
+  pubIPv6 = cloud_server_public_ipv6(servers[0])
+  c4.create_dns_record(dns, args.FQDN, pubIPv6, 'AAAA')
 
 # vim: ts=2 sw=2 tw=78 expandtab

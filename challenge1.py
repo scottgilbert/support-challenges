@@ -22,14 +22,14 @@ import time
 import argparse
 import pyrax
 
-def isValidRegion(region):
+def is_valid_region(region):
   """ Check validity of a region """
   if region in ['DFW','ORD']:
     return True
   else:
     return False
 
-def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
+def build_some_servers(cs, flavor, image, serverBaseName, numServers,
                      insertFiles={}, nets={}):
   """ Request build of CloudServers of specified flavor and image.
   Server hostnames are the combination of serverBaseName and a sequential
@@ -56,7 +56,7 @@ def BuildSomeServers(cs, flavor, image, serverBaseName, numServers,
                                       nics=nets))
   return servers
 
-def waitForServerNetworks(servers):  
+def wait_for_server_networks(servers):  
   """Given an array of pyrax server objects, wait until all of the servers
   have network IPs assigned.  Print a little activity indicator to let the
   user know that we are not stuck.
@@ -73,7 +73,7 @@ def waitForServerNetworks(servers):
         networks_assigned = False
         break
 
-def waitForServerBuilds(servers):
+def wait_for_server_builds(servers):
   """Given an array of pyrax server objects, wait until all of the servers
   builds have completed.  Print a little activity indicator to let the user
   know that we are not stuck.
@@ -90,7 +90,7 @@ def waitForServerBuilds(servers):
         allBuildsComplete = False
         break
   
-def printServersInfo(servers):
+def print_servers_info(servers):
   """Given an array of pyrax server objects, print basic information about
   each one.
   """
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if isValidRegion(args.region):
+  if is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
@@ -138,9 +138,9 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = BuildSomeServers(cs, args.flavor, args.image, args.basename,
+  servers = build_some_servers(cs, args.flavor, args.image, args.basename,
                             args.numservers)
-  waitForServerNetworks(servers)
-  printServersInfo(servers)
+  wait_for_server_networks(servers)
+  print_servers_info(servers)
 
 # vim: ts=2 sw=2 tw=78 expandtab

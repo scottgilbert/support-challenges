@@ -21,7 +21,7 @@ import argparse
 import pyrax
 import challenge1 as c1
 
-def CreateLBandAddServers(clb, LBName, servers):
+def create_lb_and_add_servers(clb, LBName, servers):
   """Create a new CloudLoadbalancer instance and add CloudServers to
   loadbalancing pool.
   """
@@ -71,7 +71,7 @@ if __name__ == "__main__":
              
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
     clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
   else:
@@ -81,11 +81,11 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  servers = c1.BuildSomeServers(cs, args.flavor, args.image, args.basename,
+  servers = c1.build_some_servers(cs, args.flavor, args.image, args.basename,
                                 args.numservers)
-  c1.waitForServerNetworks(servers)
-  c1.printServersInfo(servers)
+  c1.wait_for_server_networks(servers)
+  c1.print_servers_info(servers)
 
-  lb = CreateLBandAddServers(clb, args.lbname, servers)
+  lb = create_lb_and_add_servers(clb, args.lbname, servers)
 
 # vim: ts=2 sw=2 tw=78 expandtab

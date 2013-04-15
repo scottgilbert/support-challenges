@@ -23,7 +23,7 @@ import argparse
 import pyrax
 import challenge1 as c1
 
-def CreateADatabase(cdb, InstanceName, InstanceFlavor, VolumeSize, 
+def create_a_database(cdb, InstanceName, InstanceFlavor, VolumeSize, 
 	                  DBName, DBUserName):
   """Create a new CloudDatabase instance, Schema and User
   (with randomly generated password)
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
   credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cdb = pyrax.connect_to_cloud_databases(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
@@ -85,7 +85,7 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  CreateADatabase(cdb, args.Instance, args.flavor, args.volumesize, 
+  create_a_database(cdb, args.Instance, args.flavor, args.volumesize, 
                   args.Schema, args.User)
 
 # vim: ts=2 sw=2 tw=78 expandtab

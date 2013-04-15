@@ -22,7 +22,7 @@ import pyrax
 import challenge4 as c4
 import challenge1 as c1
 
-def makeAWebsite(cf, dns, siteName, contName, indexFileContents, 
+def make_a_website(cf, dns, siteName, contName, indexFileContents, 
                  indexFileName):
   """Create a simple website on CloudFiles using specified content
 
@@ -48,7 +48,7 @@ def makeAWebsite(cf, dns, siteName, contName, indexFileContents,
   # Make this new image the "index page" for the container
   cf.set_container_web_index_page(cont, indexFileName)
 
-  c4.createDNSRecord(dns, siteName, cont.cdn_uri.lstrip('http://'), 'CNAME')
+  c4.create_dns_record(dns, siteName, cont.cdn_uri.lstrip('http://'), 'CNAME')
   print "Done!"
 
 if __name__ == "__main__":
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cf = pyrax.connect_to_cloudfiles(region=args.region)
     dns = pyrax.connect_to_cloud_dns(region=args.region)
   else:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
   if not args.container:
     args.container = pyrax.utils.random_name(12, ascii_only=True)
 
-  makeAWebsite(cf, dns, args.FQDN, args.container, indexFileContents, 
-               os.path.basename(indexFileName))
+  make_a_website(cf, dns, args.FQDN, args.container, indexFileContents, 
+                 os.path.basename(indexFileName))
 
 # vim: ts=2 sw=2 tw=78 expandtab

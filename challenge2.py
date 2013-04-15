@@ -20,7 +20,7 @@ import pyrax
 import challenge1 as c1
 
 
-def cloneIt(cs, serverUUID):
+def clone_server(cs, serverUUID):
   """Create a clone of an existing CloudServer.
 
   An image of the "source" CloudServer is created and then a new
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.isValidRegion(args.region):
+  if c1.is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
@@ -85,10 +85,10 @@ if __name__ == "__main__":
     print "Aborting...."
     sys.exit(2)
 
-  newserver = cloneIt(cs, args.SourceServer);
+  newserver = clone_server(cs, args.SourceServer);
   # Wait for network info to become available
-  c1.waitForServerNetworks([newserver])
+  c1.wait_for_server_networks([newserver])
   # Print info for new server
-  c1.printServersInfo([newserver])
+  c1.print_servers_info([newserver])
 
 # vim: ts=2 sw=2 tw=78 expandtab
