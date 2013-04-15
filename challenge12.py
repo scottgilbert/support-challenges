@@ -23,18 +23,32 @@
 
 import sys, os, argparse
 import requests
+import json
 
 def mg_list_routes(apiKey):
   routes = requests.get("https://api.mailgun.net/v2/routes", 
                         auth=("api", apiKey))
-  print routes.text
+  #print routes.text
+  routedict =  json.loads(routes.text)
+  print "Priority            ID                  Description       ",
+  print "Expression/Action"
+  print "-------- -------------------------  ------------------- ",
+  print "------------------------------"
+  for r in routedict['items']:
+    print "%7s  %-25s  %-20s %s" % (r['priority'], r['id'], r['description'], 
+                           r['expression'])
+    for a in r['actions']:
+      print "%7s  %-25s  %-20s %s" % ('', '', '', a)
   return routes
 
 def mg_delete_route(apiKey, routeID):
+  print "Deleting route %s" % routeID
   return requests.delete("https://api.mailgun.net/v2/routes/%s" % routeID,
                          auth=("api", apiKey))
 
 def mg_create_route(apiKey, email, dest, priority, desc):
+  print "Creating route for %s, with priority %s," % (email, priority),
+  print "to %s with description '%s'" % (dest, desc)
   return requests.post("https://api.mailgun.net/v2/routes", 
                        auth=("api", apiKey),
                        data={"priority": priority,
