@@ -11,7 +11,11 @@
 #   --region REGION           Region in which to create server (DFW or ORD)
 
 
-import sys, os, time, datetime, argparse
+import sys
+import os
+import time
+import datetime
+import argparse
 import pyrax
 import challenge1 as c1
 

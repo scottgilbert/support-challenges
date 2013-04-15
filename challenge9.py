@@ -14,7 +14,10 @@
 #   --image IMAGE             Image from which to create server
 #   --region REGION           Region in which to create servers (DFW or ORD)
 
-import sys, os, re, argparse
+import sys
+import os
+import re
+import argparse
 import pyrax
 import challenge1 as c1
 import challenge4 as c4

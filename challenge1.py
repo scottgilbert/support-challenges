@@ -16,7 +16,10 @@
 #   --region REGION           Region in which to create servers (DFW or ORD)
 
 
-import os, sys, time, argparse
+import os
+import sys
+import time
+import argparse
 import pyrax
 
 def isValidRegion(region):

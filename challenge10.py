@@ -23,7 +23,10 @@
 #   --container CONTAINER     Cloudfiles container to copy error page file to
 #   --region REGION           Region in which to create devices (DFW or ORD)
 
-import sys, os, time, argparse
+import sys
+import os
+import time
+import argparse
 import pyrax
 import challenge1 as c1
 import challenge4 as c4

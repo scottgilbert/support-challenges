@@ -15,7 +15,9 @@
 #   --container               CloudFiles container name to create
 #   --region                  Region in which to create site (DFW or ORD)
 
-import sys, os, time, argparse
+import sys
+import os
+import argparse
 import pyrax
 import challenge4 as c4
 import challenge1 as c1

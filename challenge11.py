@@ -28,7 +28,9 @@
 #   --lbname LBNAME           Name of Loadbalancer to create
 #   --region REGION           Region in which to create devices (DFW or ORD)
 
-import sys, os, time, argparse
+import sys
+import os
+import argparse
 import pyrax
 import challenge1 as c1
 import challenge4 as c4

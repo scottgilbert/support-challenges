@@ -15,7 +15,10 @@
 #   --region REGION           Region (DFW or ORD)
 
 
-import sys, os, socket, argparse
+import sys
+import os
+import socket
+import argparse
 import pyrax
 import challenge1 as c1
 

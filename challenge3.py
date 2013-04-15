@@ -15,7 +15,10 @@
 
 # Requires the following two parameters:
 
-import sys, os, time, argparse
+import sys
+import os
+import time
+import argparse
 import pyrax
 import challenge1 as c1
 

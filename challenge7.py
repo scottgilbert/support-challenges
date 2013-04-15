@@ -15,7 +15,9 @@
 #   --region REGION           Region in which to create servers (DFW or ORD)
 #   --lbname                  Name for created Cloud Loadbalancer 
 
-import os, sys, time, argparse
+import os
+import sys
+import argparse
 import pyrax
 import challenge1 as c1
 

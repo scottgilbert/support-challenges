@@ -21,7 +21,8 @@
 #   --description DESCRIPTION Description of new route.
 
 
-import sys, os, argparse
+import os
+import argparse
 import requests
 import json
 

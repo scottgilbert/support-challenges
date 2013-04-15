@@ -16,7 +16,10 @@
 #   --region REGION           Region in which to create database (DFW or ORD)
 
 
-import sys, os, time, argparse
+import sys
+import os
+import time
+import argparse
 import pyrax
 import challenge1 as c1
 
