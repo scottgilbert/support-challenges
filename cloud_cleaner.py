@@ -3,12 +3,6 @@
 #  "Clean up" (delete) all cloud resources matching a prefix
 
 # Author: Scott Gilbert
-#
-# Optional Parameters:
-#   -h, --help                show help message and exit
-#   --prefix PREFIX           name prefix of resources to be deleted
-#                              (default='test') 
-#   --region REGION           Region in which to delete (DFW or ORD)
 
 import sys
 import os
@@ -24,10 +18,10 @@ def  clean_up_files(cf, prefix):
       cont = cf.get_container(contName)
       for obj in cont.get_objects():
         print "CloudFiles: deleting object %s/%s" % (contName, obj)
-        cont.delete_object(obj)
+        if not dryrun: cont.delete_object(obj)
       if cont.object_count == 0:
         print "CloudFiles: deleting container %s" % contName
-        cf.delete_container(contName)
+        if not dryrun: cf.delete_container(contName)
       else:
         print "CloudFiles: Container %s matches prefix," % contName,
         print "but is not empty, so cannot be deleted" 
@@ -39,19 +33,19 @@ def  clean_up_generic(cloud, prefix, type):
   for obj in cloud.list():
     if obj.name.startswith(prefix):
       print "%s: Deleting %s" % (type, obj.name)
-      cloud.delete(obj)
+      if not dryrun: cloud.delete(obj)
 
 def  clean_up_dns(dns, prefix):
   """Delete all DNS records and zones that start with specified prefix"""
   for zone in dns.list():
     if zone.name.startswith(prefix):
       print "DNS: Deleting entire zone %s" % zone.name
-      dns.delete(zone.id)
+      if not dryrun: dns.delete(zone.id)
     else:
       for rcd in dns.list_records(zone.id):
         if rcd.name.startswith(prefix):
           print "DNS: Deleting %s %s %s" % (rcd.name, rcd.type, rcd.data)
-          dns.delete_record(zone.id, rcd.id)
+          if not dryrun: dns.delete_record(zone.id, rcd.id)
 
 def  clean_up_networks(cn, prefix):
   pass
@@ -69,7 +63,7 @@ def  clean_up_images(cs, prefix):
   for img in cs.images.list():
     if img.name.startswith(prefix):
       try:
-        img.delete()
+        if not dryrun: img.delete()
         print "Images: Deleting %s" % img.name
       except:
         print "Images: Attempt to delete %s failed"  % img.name
@@ -80,12 +74,15 @@ def  clean_up_databases(cdb, prefix):
 
 if __name__ == "__main__": 
   parser = argparse.ArgumentParser()
-  parser.add_argument("--prefix", default='test',
+  parser.add_argument("prefix", 
                       help="name prefix of resources to be deleted")
   parser.add_argument("--region", default='DFW',
                       help="Region in which to create devices (DFW or ORD)")
+  parser.add_argument("--dryrun", action="store_true",
+                      help="Do not actually perform deletes")
 
   args = parser.parse_args()
+  dryrun = args.dryrun
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
