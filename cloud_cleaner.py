@@ -33,7 +33,8 @@ def  clean_up_generic(cloud, prefix, type):
   for obj in cloud.list():
     if obj.name.startswith(prefix):
       print "%s: Deleting %s" % (type, obj.name)
-      if not dryrun: cloud.delete(obj)
+      #if not dryrun: cloud.delete(obj)
+      if not dryrun: obj.delete()
 
 def  clean_up_dns(dns, prefix):
   """Delete all DNS records and zones that start with specified prefix"""
