@@ -47,19 +47,8 @@ def  clean_up_dns(dns, prefix):
           print "DNS: Deleting %s %s %s" % (rcd.name, rcd.type, rcd.data)
           if not dryrun: dns.delete_record(zone.id, rcd.id)
 
-def  clean_up_networks(cn, prefix):
-  pass
-
-def  clean_up_loadbalancers(clb, prefix):
-  pass
-
-def  clean_up_blockstorage(cbs, prefix):
-  pass
-
-def  clean_up_servers(dns, prefix):
-  pass
-
 def  clean_up_images(cs, prefix):
+  """Delete all cloudserver images whose names start with specified prefix"""
   for img in cs.images.list():
     if img.name.startswith(prefix):
       try:
@@ -67,10 +56,6 @@ def  clean_up_images(cs, prefix):
         print "Images: Deleting %s" % img.name
       except:
         print "Images: Attempt to delete %s failed"  % img.name
-
-def  clean_up_databases(cdb, prefix):
-  pass
-
 
 if __name__ == "__main__": 
   parser = argparse.ArgumentParser()
