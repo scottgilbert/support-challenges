@@ -29,6 +29,26 @@ def is_valid_region(region):
   else:
     return False
 
+def is_valid_image(cs, image):
+  """Check the validity of a CloudServer image uuid.
+  Return True if image is valid, False otherwise.
+  """
+  try:
+    cs.images.get(image)
+    return True
+  except:
+    return False
+
+def is_valid_flavor(cs, flavor):
+  """Check the validity of a CloudServer flavor-id.
+  Return True if flavor-id is valid, False otherwise.
+  """
+  try:
+    cs.flavors.get(flavor)
+    return True
+  except:
+    return False
+
 def build_some_servers(cs, flavor, image, serverBaseName, numServers,
                      insertFiles={}, nets={}):
   """ Request build of CloudServers of specified flavor and image.
@@ -129,11 +149,20 @@ if __name__ == "__main__":
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
+
   if is_valid_region(args.region):
     cs = pyrax.connect_to_cloudservers(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
+ 
+  if not is_valid_image(cs, args.image):
+    print "This does not appear to be a valid image-uuid: %s" % args.image
+    sys.exit(3)
+
+  if not is_valid_flavor(cs, args.flavor):
+    print "This does not appear to be a valid flavor-id: %s" % args.flavor
+    sys.exit(4)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)

@@ -22,27 +22,6 @@ import pyrax
 import challenge1 as c1
 import challenge4 as c4
 
-
-def is_valid_image(cs, image):
-  """Check the validity of a CloudServer image uuid.
-  Return True if image is valid, False otherwise.
-  """
-  try:
-    cs.images.get(image)
-    return True
-  except:
-    return False
-
-def is_valid_flavor(cs, flavor):
-  """Check the validity of a CloudServer flavor-id.
-  Return True if flavor-id is valid, False otherwise.
-  """
-  try:
-    cs.flavors.get(flavor)
-    return True
-  except:
-    return False
-
 def is_valid_hostname(hostname):
   """Check for basic validity of a FQDN
   Return True if the FQDN is valid, False otherwise.
@@ -106,10 +85,10 @@ if __name__ == "__main__":
   if not is_valid_hostname(args.FQDN):
     print "This does not appear to be a valid host name: %s" % args.FQDN
     sys.exit(2)
-  if not is_valid_image(cs, args.image):
+  if not c1.is_valid_image(cs, args.image):
     print "This does not appear to be a valid image-uuid: %s" % args.image
     sys.exit(3)
-  if not is_valid_flavor(cs, args.flavor):
+  if not c1.is_valid_flavor(cs, args.flavor):
     print "This does not appear to be a valid flavor-id: %s" % args.flavor
     sys.exit(4)
   
