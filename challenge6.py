@@ -42,6 +42,12 @@ def create_cdn_container(cf, newContainerName):
     newContainer.make_public()
     print "Done!"
 
+def is_valid_container_name(cf, contName):
+  if len(contName) > 255 or (contName.find('/') > 0):
+    return False
+  else:
+    return True
+
 if __name__ == "__main__":
   print "\nChallenge6 - Write a script that creates a CDN-enabled container in"
   print "Cloud Files.\n\n"
@@ -61,6 +67,10 @@ if __name__ == "__main__":
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
+
+  if not is_valid_container_name(cf, args.container):
+    print "The specified container name is not valid: %s" % args.container
+    sys.exit(3)
 
   create_cdn_container(cf, args.container)
 
