@@ -56,6 +56,14 @@ def create_a_database(cdb, InstanceName, InstanceFlavor, VolumeSize,
   print "User: %s" % dbu.name
   print "Password: %s" % userPassword
 
+def is_valid_db_flavor(cdb, id):
+  """Check the validity of a CloudDatabase flavor-id"""
+  try:
+    cdb.get_flavor(id)
+    return True
+  except:
+    return False
+
 if __name__ == "__main__":
   print "\nChallenge5 - Write a script that creates a Cloud Database instance."
   print "This instance should contain at least one database, and the database"
@@ -81,6 +89,14 @@ if __name__ == "__main__":
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
+
+  if not is_valid_db_flavor(cdb, args.flavor):
+    print "This is not a valid CloudDatabase flavor-id: %s" % args.flavor
+    sys.exit(3)
+
+  if args.volumesize < 1 or args.volumesize > 150:
+    print "The requested volume size is not valid: %d" % args.volumesize
+    sys.exit(4)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
