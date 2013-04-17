@@ -17,7 +17,7 @@ def  clean_up_files(cf, prefix):
     if contName.startswith(prefix):
       cont = cf.get_container(contName)
       for obj in cont.get_objects():
-        print "CloudFiles: deleting object %s/%s" % (contName, obj)
+        print "CloudFiles: deleting object %s/%s" % (contName, obj.name)
         if not dryrun: cont.delete_object(obj)
       if cont.object_count == 0:
         print "CloudFiles: deleting container %s" % contName
