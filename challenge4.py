@@ -91,6 +91,17 @@ def is_valid_ipv6_address(address):
     return False
   return True
 
+def is_valid_hostname(hostname):
+  """Check for basic validity of a FQDN
+  Return True if the FQDN is valid, False otherwise.
+  """
+  if len(hostname) > 255:
+    return False
+  if hostname[-1:] == ".":
+    hostname = hostname[:-1] # strip exactly one dot from the right, if present
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    return all(allowed.match(x) for x in hostname.split("."))
+
 if __name__ == "__main__":
   print "\nChallenge4 - Write a script that uses Cloud DNS to create a new A"
   print "record when passed a FQDN and IP address as arguments.\n\n"
@@ -110,12 +121,16 @@ if __name__ == "__main__":
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
 
+  if not is_valid_hostname(args.FQDN):
+    print "This does not appear to be a valid host name: %s" % args.FQDN
+    sys.exit(3)
+
   if is_valid_ipv4_address(args.IP):
     create_dns_record(dns, args.FQDN, args.IP, 'A')
   elif is_valid_ipv6_address(args.IP):
     create_dns_record(dns, args.FQDN, args.IP, 'AAAA')
   else:
     print 'The specified IP address "%s" is not valid' % IPAddr
-    sys.exit(2)
+    sys.exit(4)
 
 # vim: ts=2 sw=2 tw=78 expandtab

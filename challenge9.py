@@ -22,17 +22,6 @@ import pyrax
 import challenge1 as c1
 import challenge4 as c4
 
-def is_valid_hostname(hostname):
-  """Check for basic validity of a FQDN
-  Return True if the FQDN is valid, False otherwise.
-  """
-  if len(hostname) > 255:
-    return False
-  if hostname[-1:] == ".":
-    hostname = hostname[:-1] # strip exactly one dot from the right, if present
-  allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-  return all(allowed.match(x) for x in hostname.split("."))
-
 def cloud_server_public_ipv4(server):
   """Given a pyrax cloudserver object, extract and return the server's primary
   public IPv4 address.
@@ -82,7 +71,7 @@ if __name__ == "__main__":
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  if not is_valid_hostname(args.FQDN):
+  if not c4.is_valid_hostname(args.FQDN):
     print "This does not appear to be a valid host name: %s" % args.FQDN
     sys.exit(2)
   if not c1.is_valid_image(cs, args.image):
