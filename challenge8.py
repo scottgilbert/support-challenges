@@ -79,6 +79,10 @@ if __name__ == "__main__":
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
 
+  if not c4.is_valid_hostname(args.FQDN):
+    print "This does not appear to be a valid host name: %s" % args.FQDN
+    sys.exit(3)
+
   if args.htmlfile:
     indexFileName = os.path.expanduser(args.htmlfile)
     if os.path.isfile(indexFileName):
