@@ -121,6 +121,7 @@ if __name__ == "__main__":
                                   args.numservers, {}, allnets)
   c1.wait_for_server_builds(servers)
   c1.print_servers_info(servers)
+
   #Create CBS volumes and attach to servers
   for srv in servers:
     volname = "vol_%s" % srv.name
@@ -129,6 +130,7 @@ if __name__ == "__main__":
     vol = cbs.create(name=volname, size=args.volumesize, volume_type="SATA")
     print "Attaching volume %s to server %s" % (volname, srv.name)
     vol.attach_to_instance(srv, mountpoint='/dev/xvdd')
+
   #Create LB, with server nodes 
   if not args.lbname:
     LBName = 'LB' + args.FQDN
@@ -137,12 +139,14 @@ if __name__ == "__main__":
   print "Creating Loadbalancer %s" % LBName
   lb = c7.create_lb_and_add_servers(clb, LBName, servers)
   c10.wait_for_lb_build(lb)
+
   #install ssl cert/key on LB
   cert = open(sslCertFile, 'r').read()
   key = open(sslKeyFile, 'r').read()
   print "Applying SSL cert from file %s to Loadbalancer\n" % sslCertFile
   lb.add_ssl_termination(securePort=443, enabled=True, secureTrafficOnly=False,
                          certificate=cert, privatekey=key)
+
   # create DNS entries for the LB
   c4.create_dns_record(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
   print "\nDone!\n"

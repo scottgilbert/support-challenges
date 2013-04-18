@@ -133,6 +133,7 @@ if __name__ == "__main__":
                                   args.numservers, serverFiles)
   c1.wait_for_server_networks(servers)
   c1.print_servers_info(servers)
+
   # Create Loadbalancer
   if not args.lbname:
     LBName = 'LB' + args.FQDN
@@ -141,16 +142,19 @@ if __name__ == "__main__":
   print "Creating Loadbalancer %s" % LBName
   lb = c7.create_lb_and_add_servers(clb, LBName, servers)
   wait_for_lb_build(lb)
+
   # create DNS entries for the LB
   c4.create_dns_record(dns, args.FQDN, lb.virtual_ips[0].address, 'A')
-  # add LB monitor
+
   print "Adding Loadbalancer monitor"
   lb.add_health_monitor(type="CONNECT", delay=5, timeout=2,
           attemptsBeforeDeactivation=1)
   wait_for_lb_build(lb)
+
   # add LB error page
   errorPage = open(errorPageFile, 'r').read()
   lb.set_error_page(errorPage)
+
   # Upload error page to cloudfiles (container?)
   if not args.container:
     args.container = pyrax.utils.random_name(12, ascii_only=True)

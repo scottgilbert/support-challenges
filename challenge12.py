@@ -81,7 +81,7 @@ if __name__ == "__main__":
                       help="Description of new route")
   group = parser.add_mutually_exclusive_group()
   group.add_argument("--list", action="store_true",
-                      help="List routes. No routes are created.")
+                      help="List current routes. No routes are created.")
   group.add_argument("--delete", 
                       help="Delete route identified by ID.")
   args = parser.parse_args()
