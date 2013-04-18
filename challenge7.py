@@ -56,7 +56,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("--flavor", default=2, 
                       help="Flavor of servers to create")
-  parser.add_argument("--image", help="Image from which to creat servers", 
+  parser.add_argument("--image", help="Image from which to create servers", 
                       default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
   parser.add_argument("--basename", default='web', 
                       help="Base name to assign to new servers")
@@ -77,6 +77,14 @@ if __name__ == "__main__":
   else:
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
+
+  if not c1.is_valid_image(cs, args.image):
+    print "This does not appear to be a valid image-uuid: %s" % args.image
+    sys.exit(3)
+
+  if not c1.is_valid_flavor(cs, args.flavor):
+    print "This does not appear to be a valid flavor-id: %s" % args.flavor
+    sys.exit(4)
 
   # unbuffer stdout for pretty output
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
