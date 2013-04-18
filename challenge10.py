@@ -109,15 +109,21 @@ if __name__ == "__main__":
 
   sshkeyFile = os.path.expanduser(args.sshkeyfile)
   errorPageFile = os.path.expanduser(args.errorpage)
-  if not c9.is_valid_hostname(args.FQDN):
+  if not c4.is_valid_hostname(args.FQDN):
     print "The specified FQDN is not valid: %s" % args.FQDN
-    sys.exit(2)
+    sys.exit(7)
   if not os.path.isfile(sshkeyFile):
     print "The ssh key file does not exist: %s" % sshKeyFile
     sys.exit(3)
   if not os.path.isfile(errorPageFile):
     print "The Error Page file does not exist: %s" % errorPageFile
     sys.exit(4)
+  if not c1.is_valid_image(cs, args.image):
+    print "This does not appear to be a valid image-uuid: %s" % args.image
+    sys.exit(5)
+  if not c1.is_valid_flavor(cs, args.flavor):
+    print "This does not appear to be a valid flavor-id: %s" % args.flavor
+    sys.exit(6)
 
   # Create Servers
   sshkey = open(sshkeyFile, 'r').read()
