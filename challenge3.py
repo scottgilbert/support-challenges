@@ -1,9 +1,24 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Challenge3 - Write a script that accepts a directory as an argument as well
 # as a container name. The script should upload the contents of the specified
 # directory to the container (or create it if it doesn't exist). The script
 # should handle errors appropriately. (Check for invalid paths, etc.)  
-# Author: Scott Gilbert
+
+# Copyright 2013 Scott Gilbert
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
 # Required Parameters:
 #  SourceDir  source directory containing files to be uploaded
@@ -13,7 +28,6 @@
 #   -h, --help                show help message and exit
 #   --region REGION           Region in which to create container (DFW or ORD)
 
-# Requires the following two parameters:
 
 import sys
 import os

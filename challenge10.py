@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Challenge10 - Write an application that will:
 #  - Create 2 servers, supplying a ssh key to be installed at 
 #    /root/.ssh/authorized_keys.
@@ -7,7 +8,21 @@
 #  - Set up LB monitor and custom error page. 
 #  - Create a DNS record based on a FQDN for the LB VIP. 
 #  - Write the error page html to a file in cloud files for backup.
-# Author: Scott Gilbert
+
+# Copyright 2013 Scott Gilbert
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
 # Required Parameters:
 #  FQDN                       FQDN for the new website
@@ -22,6 +37,7 @@
 #   --lbname LBNAME           Name of Loadbalancer to create
 #   --container CONTAINER     Cloudfiles container to copy error page file to
 #   --region REGION           Region in which to create devices (DFW or ORD)
+
 
 import sys
 import os

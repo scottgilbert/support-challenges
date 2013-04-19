@@ -1,10 +1,25 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Challenge8 - Write a script that will create a static webpage served out of
 # Cloud Files. The script must create a new container, cdn enable it, enable
 # it to serve an index file, create an index file object, upload the object to
 # the container, and create a CNAME record pointing to the CDN URL of the
 # container. 
-# Author: Scott Gilbert
+
+# Copyright 2013 Scott Gilbert
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
 # Required Parameters:
 #   FQDN                      FQDN for the new website
@@ -14,6 +29,7 @@
 #   --htmlfile                Local file containing new site's content
 #   --container               CloudFiles container name to create
 #   --region                  Region in which to create site (DFW or ORD)
+
 
 import sys
 import os

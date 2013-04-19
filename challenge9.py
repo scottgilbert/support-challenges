@@ -1,9 +1,24 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Challenge9 - Write an application that when passed the arguments FQDN,
 # image, and flavor it creates a server of the specified image and flavor with
 # the same name as the fqdn, and creates a DNS entry for the fqdn pointing to
 # the server's public IP.
-# Author: Scott Gilbert
+
+# Copyright 2013 Scott Gilbert
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
 # Required Parameters:
 #   FQDN                      FQDN for the new CloudServer
@@ -13,6 +28,7 @@
 #   --flavor FLAVOR           Flavor of server to create
 #   --image IMAGE             Image from which to create server
 #   --region REGION           Region in which to create servers (DFW or ORD)
+
 
 import sys
 import os
