@@ -28,8 +28,6 @@
 
 # Required Parameters:
 #  FQDN                       FQDN for the DNS record
-#  sslcertfile                file containing ssl certificate
-#  sslkeyfile                 file containing ssl private key
 #
 # Optional Parameters:
 #   -h, --help                show help message and exit
@@ -40,6 +38,8 @@
 #   --volumesize VOLUMESIZE   Size of CBS volume to attach to servers
 #   --networkname NETWORKNAME Name to give to new Cloud Network
 #   --networknet NETWORKNET   CIDR network address to use on new network
+#   --sslcertfile             file containing ssl certificate
+#   --sslkeyfile              file containing ssl private key
 #   --lbname LBNAME           Name of Loadbalancer to create
 #   --region REGION           Region in which to create devices (DFW or ORD)
 
@@ -53,6 +53,41 @@ import challenge4 as c4
 import challenge7 as c7
 import challenge9 as c9
 import challenge10 as c10
+
+try:
+  from OpenSSL import crypto, SSL
+  from time import gmtime, mktime
+  canGenerateSSL = True
+except:
+  canGenerateSSL = False
+
+def create_self_signed_cert(cn):
+  """ create a new self-signed cert and key.
+  Returns tuple (cert, private_key)
+  """
+   
+  # create a key pair
+  pkey = crypto.PKey()
+  pkey.generate_key(crypto.TYPE_RSA, 2048)
+    
+  # create a self-signed cert
+  cert = crypto.X509()
+  cert.set_pubkey(pkey)
+  cert.get_subject().CN = cn
+  cert.get_subject().C = "US"
+  cert.get_subject().ST = "Texas"
+  cert.get_subject().L = "San Antonio"
+  cert.get_subject().O = "Awesome Unlimited!"
+  cert.get_subject().OU = "Extra Awesome"
+  cert.set_serial_number(1)
+  cert.gmtime_adj_notBefore(0)
+  cert.gmtime_adj_notAfter(10*365*24*60*60)
+  cert.set_issuer(cert.get_subject())
+  cert.sign(pkey, 'sha1')
+     
+  ssCert = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
+  ssKey = crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey)
+  return (ssCert, ssKey)
 
 if __name__ == "__main__": 
   print "\nChallenge 11 - Write an application that will:"
@@ -70,8 +105,6 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument("FQDN", help="FQDN for the DNS record")
-  parser.add_argument("sslcertfile", help="File containing ssl certificate")
-  parser.add_argument("sslkeyfile", help="file containing ssl private key")
   parser.add_argument("--basename", help="Base name to assign to new servers")
   parser.add_argument("--image", help="Image from which to create servers", 
                       default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
@@ -85,6 +118,10 @@ if __name__ == "__main__":
                       help="Name to give to new Cloud Network")
   parser.add_argument("--networknet", default='192.168.99.0/24',
                       help="CIDR network address to use on new network")
+  parser.add_argument("--sslcertfile", default=False,
+                      help="File containing ssl certificate")
+  parser.add_argument("--sslkeyfile", default=False,
+                      help="file containing ssl private key")
   parser.add_argument("--lbname", default=False,
                       help="Name of Loadbalancer to create")
   parser.add_argument("--region", default='DFW',
@@ -103,21 +140,29 @@ if __name__ == "__main__":
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
 
-  sslCertFile = os.path.expanduser(args.sslcertfile)
-  if not os.path.isfile(sslCertFile):
-    print 'The specified SSL Cert file "%s" does not exist' % sslCertFile
-    sys.exit(3)
+  if not args.sslcertfile or not args.sslkeyfile:
+    print "You didn't supply an SSL certificate and key.",
+    print "No worries! We'll create one for you...\n"
+    (cert, key) = create_self_signed_cert(args.FQDN) 
+  else:
+    sslCertFile = os.path.expanduser(args.sslcertfile)
+    if not os.path.isfile(sslCertFile):
+      print 'The specified SSL Cert file "%s" does not exist' % sslCertFile
+      sys.exit(3)
+  
+    sslKeyFile = os.path.expanduser(args.sslkeyfile)
+    if not os.path.isfile(sslKeyFile):
+      print 'The specified SSL Private Key file "%s" does not exist' % sslKeyFile
+      sys.exit(4)
 
-  sslKeyFile = os.path.expanduser(args.sslkeyfile)
-  if not os.path.isfile(sslKeyFile):
-    print 'The specified SSL Private Key file "%s" does not exist' % sslKeyFile
-    sys.exit(4)
+    cert = open(sslCertFile, 'r').read()
+    key = open(sslKeyFile, 'r').read()
 
   if args.volumesize < 100 or args.volumesize > 1024:
     print 'The specified volume size is not valid: %s' % args.volumesize
     sys.exit(5)
 
-  if not c9.is_valid_hostname(args.FQDN):
+  if not c4.is_valid_hostname(args.FQDN):
     print "The specified FQDN is not valid: %s" % args.FQDN
     sys.exit(6)
 
@@ -140,7 +185,7 @@ if __name__ == "__main__":
 
   #Create CBS volumes and attach to servers
   for srv in servers:
-    volname = "vol_%s" % srv.name
+    volname = "%s_vol" % srv.name
     print "Creating Block Storage Volume %s of size %d" % (volname, 
                                                            args.volumesize)
     vol = cbs.create(name=volname, size=args.volumesize, volume_type="SATA")
@@ -149,7 +194,7 @@ if __name__ == "__main__":
 
   #Create LB, with server nodes 
   if not args.lbname:
-    LBName = 'LB' + args.FQDN
+    LBName = '%s-LB' % args.FQDN
   else:
     LBName = args.lbname
   print "Creating Loadbalancer %s" % LBName
@@ -157,9 +202,7 @@ if __name__ == "__main__":
   c10.wait_for_lb_build(lb)
 
   #install ssl cert/key on LB
-  cert = open(sslCertFile, 'r').read()
-  key = open(sslKeyFile, 'r').read()
-  print "Applying SSL cert from file %s to Loadbalancer\n" % sslCertFile
+  print "Applying SSL certificate to Loadbalancer\n" 
   lb.add_ssl_termination(securePort=443, enabled=True, secureTrafficOnly=False,
                          certificate=cert, privatekey=key)
 
