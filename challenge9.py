@@ -32,7 +32,6 @@
 
 import sys
 import os
-import re
 import argparse
 import pyrax
 import challenge1 as c1
