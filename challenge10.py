@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
   # Create Loadbalancer
   if not args.lbname:
-    LBName = 'LB' + args.FQDN
+    LBName = '%s-LB' % args.FQDN
   else:
     LBName = args.lbname
   print "Creating Loadbalancer %s" % LBName

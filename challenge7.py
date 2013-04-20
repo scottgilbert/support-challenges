@@ -52,7 +52,7 @@ def create_lb_and_add_servers(clb, LBName, servers):
   # Create the LB itself
   lb = clb.create(LBName, port=80, protocol="HTTP",
           nodes=node, virtual_ips=[vip], algorithm='ROUND_ROBIN')
-  print "\nNew Loadbalancer %s:\n" % lb.name 
+  print "\nNew Loadbalancer %s:" % lb.name 
   print " VIP: %s" % lb.virtual_ips[0].address
   print " protocol: %s" % lb.protocol
   print " port: %s" % lb.port
@@ -73,11 +73,11 @@ if __name__ == "__main__":
                       help="Flavor of servers to create")
   parser.add_argument("--image", help="Image from which to create servers", 
                       default='c195ef3b-9195-4474-b6f7-16e5bd86acd0')
-  parser.add_argument("--basename", default='web', 
+  parser.add_argument("--basename", default='Challenge7Server', 
                       help="Base name to assign to new servers")
   parser.add_argument("--numservers", default=2, type=int,
                       help="Number of servers to create")
-  parser.add_argument("--lbname", default='LB-Challenge7',
+  parser.add_argument("--lbname", default='Challenge7LB',
                       help="Name for created Cloud Loadbalancer")
   parser.add_argument("--region", default='DFW',
                       help="Region in which to create devices (DFW or ORD)")

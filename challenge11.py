@@ -185,7 +185,7 @@ if __name__ == "__main__":
 
   #Create CBS volumes and attach to servers
   for srv in servers:
-    volname = "%s_vol" % srv.name
+    volname = "%s-vol" % srv.name
     print "Creating Block Storage Volume %s of size %d" % (volname, 
                                                            args.volumesize)
     vol = cbs.create(name=volname, size=args.volumesize, volume_type="SATA")
