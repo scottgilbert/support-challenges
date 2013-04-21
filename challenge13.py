@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# cloud_cleaner 
-#  "Clean up" (delete) all cloud resources matching a prefix
+# Challenge 13: Write an application that nukes everything in your Cloud
+# Account. It should:
+#   Delete all Cloud Servers
+#   Delete all Custom Images
+#   Delete all Cloud Files Containers and Objects
+#   Delete all Databases
+#   Delete all Networks
+#   Delete all CBS Volumes
 
 # Copyright 2013 Scott Gilbert
 # All Rights Reserved.
@@ -18,11 +24,32 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+# Optional Parameters:
+#   -h, --help                Show help message and exit
+#   prefix                    Delete cloud resources with names starting
+#                             with this prefix
+#   --region REGION           Region in which to delete resources (DFW or ORD)
+#   --all                     Delete ALL cloud resources in account (within a 
+#                             single region)
+#   --dryrun                  Do not actually delete anything, just print what
+#                             would be deleted.
+
 
 import sys
 import os
 import argparse
 import pyrax
+import challenge1 as c1
+
+def  clean_up_generic(cloud, prefix, type):
+  """Generic Cloud Delete.  It will attempt to delete whatever cloud device
+  type it is given, if the name of the device matches the specified prefix.
+  """
+  for obj in cloud.list():
+    if obj.name.startswith(prefix):
+      print "%s: Deleting %s" % (type, obj.name)
+      #if not dryrun: cloud.delete(obj)
+      if not dryrun: obj.delete()
 
 def  clean_up_files(cf, prefix):
   """Delete all Cloudfiles containers (and contents) where the container
@@ -40,16 +67,6 @@ def  clean_up_files(cf, prefix):
       else:
         print "CloudFiles: Container %s matches prefix," % contName,
         print "but is not empty, so cannot be deleted" 
-
-def  clean_up_generic(cloud, prefix, type):
-  """Generic Cloud Delete.  It will attempt to delete whatever cloud device
-  type it is given, if the name of the device matches the specified prefix.
-  """
-  for obj in cloud.list():
-    if obj.name.startswith(prefix):
-      print "%s: Deleting %s" % (type, obj.name)
-      #if not dryrun: cloud.delete(obj)
-      if not dryrun: obj.delete()
 
 def  clean_up_dns(dns, prefix):
   """Delete all DNS records and zones that start with specified prefix"""
@@ -74,16 +91,40 @@ def  clean_up_images(cs, prefix):
         print "Images: Attempt to delete %s failed"  % img.name
 
 if __name__ == "__main__": 
+  print "Challenge 13: Write an application that nukes everything in your",
+  print "Cloud Account. It should:"
+  print "  -Delete all Cloud Servers"
+  print "  -Delete all Custom Images"
+  print "  -Delete all Cloud Files Containers and Objects"
+  print "  -Delete all Databases"
+  print "  -Delete all Networks"
+  print "  -Delete all CBS Volumes"
+
   parser = argparse.ArgumentParser()
-  parser.add_argument("prefix", 
+  parser.add_argument("prefix", default=False
                       help="name prefix of resources to be deleted")
   parser.add_argument("--region", default='DFW',
                       help="Region in which to create devices (DFW or ORD)")
   parser.add_argument("--dryrun", action="store_true",
                       help="Do not actually perform deletes")
+  parser.add_argument("--all", action="store_true",
+                      help="Delete ALL cloud resources in account")
 
   args = parser.parse_args()
+  if not c1.is_valid_region(args.region):
+    print "The region you requested is not valid: %s" % args.region
+    sys.exit(2)
+  if not args.prefix and not args.all:
+    print "You must either specify a prefix OR",
+    print "to delete everything specify --all"
+    sys.exit(3)
+  if args.prefix and args.all:
+    print "You cannot specify both a prefix and --all",
+    print "If you want to delete everything, do not provide a prefix."
+    sys.exit(4)
+
   dryrun = args.dryrun
+  if args.all: args.prefix = ''
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
