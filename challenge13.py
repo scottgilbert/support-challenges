@@ -48,7 +48,6 @@ def  clean_up_generic(cloud, prefix, type):
   for obj in cloud.list():
     if obj.name.startswith(prefix):
       print "%s: Deleting %s" % (type, obj.name)
-      #if not dryrun: cloud.delete(obj)
       if not dryrun: obj.delete()
 
 def  clean_up_files(cf, prefix):
@@ -90,6 +89,20 @@ def  clean_up_images(cs, prefix):
       except:
         print "Images: Attempt to delete %s failed"  % img.name
 
+def  clean_up_blockstorage(cloud, prefix):
+  """Delete all block storage devices whose names start with specified prefix
+  """
+  for obj in cloud.list():
+    if obj.name.startswith(prefix):
+      print "Block Storage: Deleting %s" % (obj.name)
+      if not dryrun: 
+        # sometimes, if we just deleted a server using this storage, it takes a
+        # bit of time before the storage is freed up.  So, we'll wait until the
+        # stoage is in a "deleteable status".
+        pyrax.utils.wait_until(obj, "status", ['available', 'error'],
+                               interval=2, attempts=120)
+        obj.delete()
+
 if __name__ == "__main__": 
   print "Challenge 13: Write an application that nukes everything in your",
   print "Cloud Account. It should:"
@@ -101,7 +114,7 @@ if __name__ == "__main__":
   print "  -Delete all CBS Volumes"
 
   parser = argparse.ArgumentParser()
-  parser.add_argument("prefix", default=False
+  parser.add_argument("prefix", default=False,
                       help="name prefix of resources to be deleted")
   parser.add_argument("--region", default='DFW',
                       help="Region in which to create devices (DFW or ORD)")
@@ -150,7 +163,7 @@ if __name__ == "__main__":
   # Databases
   clean_up_generic(cdb, args.prefix, 'CloudDatabase')
   # Block Storage
-  clean_up_generic(cbs, args.prefix, 'CloudBlockStorage')
+  clean_up_blockstorage(cbs, args.prefix)
   # Networks
   clean_up_generic(cn, args.prefix, 'CloudNetworks')
 
