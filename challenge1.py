@@ -37,9 +37,15 @@ import time
 import argparse
 import pyrax
 
+def valid_regions():
+  """Return list of valid regions"""
+  # I have not yet been able to find a good way to get this list via the API
+  # so it is hardcoded for now.
+  return ['DFW','ORD']
+
 def is_valid_region(region):
   """ Check validity of a region """
-  if region in ['DFW','ORD']:
+  if region in valid_regions():
     return True
   else:
     return False
