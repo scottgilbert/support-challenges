@@ -26,9 +26,9 @@
 
 # Optional Parameters:
 #   -h, --help                Show help message and exit
-#   prefix                    Delete cloud resources with names starting
+#   --prefix PREFIX           Delete cloud resources with names starting
 #                             with this prefix
-#   --region REGION           Region in which to delete resources (DFW or ORD)
+#   --region REGION           Delete objects only from specified region
 #   --all                     Delete ALL cloud resources in account (within a 
 #                             single region)
 #   --dryrun                  Do not actually delete anything, just print what
@@ -47,8 +47,9 @@ def  clean_up_generic(cloud, prefix, type):
   """
   for obj in cloud.list():
     if obj.name.startswith(prefix):
-      print "%s: Deleting %s" % (type, obj.name)
-      if not dryrun: obj.delete()
+      if type != 'CloudNetworks' or obj.is_isolated:
+       print "%s: Deleting %s" % (type, obj.name)
+       if not dryrun: obj.delete()
 
 def  clean_up_files(cf, prefix):
   """Delete all Cloudfiles containers (and contents) where the container
@@ -82,7 +83,7 @@ def  clean_up_dns(dns, prefix):
 def  clean_up_images(cs, prefix):
   """Delete all cloudserver images whose names start with specified prefix"""
   for img in cs.images.list():
-    if img.name.startswith(prefix):
+    if img.name.startswith(prefix) and img.metadata['image_type'] != 'base':
       try:
         if not dryrun: img.delete()
         print "Images: Deleting %s" % img.name
@@ -112,23 +113,39 @@ if __name__ == "__main__":
   print "  -Delete all Databases"
   print "  -Delete all Networks"
   print "  -Delete all CBS Volumes"
+  print "(not required, but we also attempt to clean up DNS and Loadbalancers)"
 
   parser = argparse.ArgumentParser()
-  parser.add_argument("prefix", default=False,
+  parser.add_argument("--prefix", default=False,
                       help="name prefix of resources to be deleted")
-  parser.add_argument("--region", default='DFW',
-                      help="Region in which to create devices (DFW or ORD)")
+  parser.add_argument("--region", default='all',
+                      help="Only delete cloud objects from specified region")
   parser.add_argument("--dryrun", action="store_true",
                       help="Do not actually perform deletes")
   parser.add_argument("--all", action="store_true",
                       help="Delete ALL cloud resources in account")
-
+  parser.add_argument("--skipservers", action="store_true",
+                      help="Skip the deletion of servers")
+  parser.add_argument("--skipimages", action="store_true",
+                      help="Skip the deletion of images")
+  parser.add_argument("--skipfiles", action="store_true",
+                      help="Skip the deletion of cloudfiles")
+  parser.add_argument("--skipdatabases", action="store_true",
+                      help="Skip the deletion of databases")
+  parser.add_argument("--skipnetworks", action="store_true",
+                      help="Skip the deletion of networks")
+  parser.add_argument("--skipblockstorage", action="store_true",
+                      help="Skip the deletion of block storage")
+  parser.add_argument("--skipdns", action="store_true",
+                      help="Skip the deletion of any DNS")
+  parser.add_argument("--skiploadbalancers", action="store_true",
+                      help="Skip the deletion of loadbalancers")
   args = parser.parse_args()
-  if not c1.is_valid_region(args.region):
+  if args.region != 'all' and not c1.is_valid_region(args.region):
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
   if not args.prefix and not args.all:
-    print "You must either specify a prefix OR",
+    print "You must either specify a --prefix OR",
     print "to delete everything specify --all"
     sys.exit(3)
   if args.prefix and args.all:
@@ -136,35 +153,46 @@ if __name__ == "__main__":
     print "If you want to delete everything, do not provide a prefix."
     sys.exit(4)
 
+  if args.region == 'all':
+    deleteFromRegions = c1.valid_regions()
+  else:
+    deleteFromRegions = args.region
+
   dryrun = args.dryrun
   if args.all: args.prefix = ''
 
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
 
-  cs = pyrax.connect_to_cloudservers(region=args.region)
-  dns = pyrax.connect_to_cloud_dns(region=args.region)
-  clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
-  cn = pyrax.connect_to_cloud_networks(region=args.region)
-  cbs = pyrax.connect_to_cloud_blockstorage(region=args.region)
-  cf = pyrax.connect_to_cloudfiles(region=args.region)
-  cdb = pyrax.connect_to_cloud_databases(region=args.region)
+  for region in deleteFromRegions:
+    print "\nLooking for Cloud objects in %s..." % region
 
-  # Servers
-  clean_up_generic(cs, args.prefix, 'CloudServer')
-  # Files
-  clean_up_files(cf, args.prefix)
-  # DNS
-  clean_up_dns(dns, args.prefix)
-  # Loadbalancers
-  clean_up_generic(clb, args.prefix, 'CloudLoadbalancer')
-  # Images
-  clean_up_images(cs, args.prefix)
-  # Databases
-  clean_up_generic(cdb, args.prefix, 'CloudDatabase')
-  # Block Storage
-  clean_up_blockstorage(cbs, args.prefix)
-  # Networks
-  clean_up_generic(cn, args.prefix, 'CloudNetworks')
+    cs = pyrax.connect_to_cloudservers(region=region)
+    dns = pyrax.connect_to_cloud_dns(region=region)
+    clb = pyrax.connect_to_cloud_loadbalancers(region=region)
+    cn = pyrax.connect_to_cloud_networks(region=region)
+    cbs = pyrax.connect_to_cloud_blockstorage(region=region)
+    cf = pyrax.connect_to_cloudfiles(region=region)
+    cdb = pyrax.connect_to_cloud_databases(region=region)
+  
+    # Servers
+    if not args.skipservers: clean_up_generic(cs, args.prefix, 'CloudServer')
+    # Files
+    if not args.skipfiles: clean_up_files(cf, args.prefix)
+    # DNS
+    if not args.skipdns: clean_up_dns(dns, args.prefix)
+    # Loadbalancers
+    if not args.skiploadbalancers:
+      clean_up_generic(clb, args.prefix, 'CloudLoadbalancer')
+    # Images
+    if not args.skipimages: clean_up_images(cs, args.prefix)
+    # Databases
+    if not args.skipdatabases:
+      clean_up_generic(cdb, args.prefix, 'CloudDatabase')
+    # Block Storage
+    if not args.skipblockstorage: clean_up_blockstorage(cbs, args.prefix)
+    # Networks
+    if not args.skipnetworks: 
+      clean_up_generic(cn, args.prefix, 'CloudNetworks')
 
 # vim: ts=2 sw=2 tw=78 expandtab
