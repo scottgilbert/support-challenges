@@ -156,7 +156,7 @@ if __name__ == "__main__":
   if args.region == 'all':
     deleteFromRegions = c1.valid_regions()
   else:
-    deleteFromRegions = args.region
+    deleteFromRegions = [args.region]
 
   dryrun = args.dryrun
   if args.all: args.prefix = ''
