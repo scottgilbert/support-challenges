@@ -37,6 +37,7 @@
 
 import sys
 import os
+import time
 import argparse
 import pyrax
 import challenge1 as c1
@@ -57,16 +58,11 @@ def  clean_up_files(cf, prefix):
   """
   for contName in cf.list_containers():
     if contName.startswith(prefix):
+      print "CloudFiles: deleting container %s" % contName
       cont = cf.get_container(contName)
-      for obj in cont.get_objects():
-        print "CloudFiles: deleting object %s/%s" % (contName, obj.name)
-        if not dryrun: cont.delete_object(obj)
-      if cont.object_count == 0:
-        print "CloudFiles: deleting container %s" % contName
-        if not dryrun: cf.delete_container(contName)
-      else:
-        print "CloudFiles: Container %s matches prefix," % contName,
-        print "but is not empty, so cannot be deleted" 
+      if not dryrun:
+        cont.delete_all_objects()
+        cont.delete()
 
 def  clean_up_dns(dns, prefix):
   """Delete all DNS records and zones that start with specified prefix"""
