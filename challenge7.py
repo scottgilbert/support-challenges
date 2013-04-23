@@ -86,8 +86,8 @@ if __name__ == "__main__":
              
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.is_valid_region(args.region, 'compute') and
-      c1.is_valid_region(args.region, 'load_balancer'):
+  if (c1.is_valid_region(args.region, 'compute') and
+      c1.is_valid_region(args.region, 'load_balancer')):
     cs = pyrax.connect_to_cloudservers(region=args.region)
     clb = pyrax.connect_to_cloud_loadbalancers(region=args.region)
   else:
