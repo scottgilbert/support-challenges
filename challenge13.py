@@ -141,7 +141,7 @@ if __name__ == "__main__":
   parser.add_argument("--skiploadbalancers", action="store_true",
                       help="Skip the deletion of loadbalancers")
   args = parser.parse_args()
-  if args.region != 'all' and not c1.is_valid_region(args.region):
+  if args.region != 'all' and not c1.is_valid_region(args.region, 'compute'):
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
   if not args.prefix and not args.all:
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     sys.exit(4)
 
   if args.region == 'all':
-    deleteFromRegions = c1.valid_regions()
+    deleteFromRegions = c1.valid_regions('compute')
   else:
     deleteFromRegions = [args.region]
 

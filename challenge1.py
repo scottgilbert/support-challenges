@@ -37,15 +37,15 @@ import time
 import argparse
 import pyrax
 
-def valid_regions():
+def valid_regions(service):
   """Return list of valid regions"""
-  # I have not yet been able to find a good way to get this list via the API
-  # so it is hardcoded for now.
-  return ['DFW','ORD']
+  # This is the best I've been able to come up with to get a list of valid
+  # regions.  
+  return pyrax.identity.services[service]['endpoints'].keys()
 
-def is_valid_region(region):
-  """ Check validity of a region """
-  if region in valid_regions():
+def is_valid_region(region, service):
+  """ Check validity of a region for a specified service """
+  if region in valid_regions(service):
     return True
   else:
     return False
@@ -171,7 +171,7 @@ if __name__ == "__main__":
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
 
-  if is_valid_region(args.region):
+  if is_valid_region(args.region, 'compute'):
     cs = pyrax.connect_to_cloudservers(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region

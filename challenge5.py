@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
   credential_file = os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
-  if c1.is_valid_region(args.region):
+  if c1.is_valid_region(args.region, 'database'):
     cdb = pyrax.connect_to_cloud_databases(region=args.region)
   else:
     print "The region you requested is not valid: %s" % args.region
