@@ -141,6 +141,10 @@ if __name__ == "__main__":
   parser.add_argument("--skiploadbalancers", action="store_true",
                       help="Skip the deletion of loadbalancers")
   args = parser.parse_args()
+
+  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
+  pyrax.set_credential_file(credential_file)
+
   if args.region != 'all' and not c1.is_valid_region(args.region, 'compute'):
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
@@ -160,9 +164,6 @@ if __name__ == "__main__":
 
   dryrun = args.dryrun
   if args.all: args.prefix = ''
-
-  credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
-  pyrax.set_credential_file(credential_file)
 
   for region in deleteFromRegions:
     print "\nLooking for Cloud objects in %s..." % region
