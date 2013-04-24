@@ -141,7 +141,8 @@ if __name__ == "__main__":
   credential_file=os.path.expanduser("~/.rackspace_cloud_credentials")
   pyrax.set_credential_file(credential_file)
 
-  if args.region != 'all' and not c1.is_valid_region(args.region, 'compute'):
+  if args.region != 'all' and not c1.is_valid_region(args.region,
+                                                     'load_balancer'):
     print "The region you requested is not valid: %s" % args.region
     sys.exit(2)
   if not args.prefix and not args.all:
@@ -154,7 +155,7 @@ if __name__ == "__main__":
     sys.exit(4)
 
   if args.region == 'all':
-    deleteFromRegions = c1.valid_regions('compute')
+    deleteFromRegions = c1.valid_regions('load_balancer')
   else:
     deleteFromRegions = [args.region]
 
