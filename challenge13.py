@@ -109,7 +109,7 @@ if __name__ == "__main__":
   print "  -Delete all Databases"
   print "  -Delete all Networks"
   print "  -Delete all CBS Volumes"
-  print "(not required, but we also attempt to clean up DNS and Loadbalancers)"
+  print "(not required, but we also delete DNS and Loadbalancers)\n"
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--prefix", default=False,
